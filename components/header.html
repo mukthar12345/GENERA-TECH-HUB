@@ -1,0 +1,51 @@
+<!-- ============================================
+     GENERA TECH HUB - HEADER COMPONENT
+     ============================================
+     This is the main navigation bar for all pages
+     It includes: Logo, Navigation Links, Auth Buttons
+     ============================================ -->
+
+<a class="skip-link" href="#main-content">Skip to content</a>
+<header>
+    <nav class="nav-container" role="navigation" aria-label="Main Navigation">
+        <a href="/src/pages/index.html" class="logo" aria-label="Genera Tech Hub Home">
+            <span class="logo-mark" aria-hidden="true">G</span>
+            <span class="logo-name">Genera<span>Tech</span> Hub</span>
+        </a>
+
+        <button class="hamburger" aria-label="Toggle Menu" aria-expanded="false" aria-controls="main-navigation">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <div class="nav-panel" id="main-navigation">
+            <ul class="nav-links">
+                <li><a href="/src/pages/index.html">Home</a></li>
+                <li><a href="/src/pages/product.html">Products</a></li>
+                <li><a href="/src/pages/repair.html">Repair</a></li>
+                <li><a href="/src/pages/swap.html">Swap</a></li>
+                <li><a href="/src/pages/reviews.html">Reviews</a></li>
+                <li><a href="/src/pages/about.html">About</a></li>
+                <li><a href="/src/pages/contact.html">Contact</a></li>
+            </ul>
+            <div class="auth-buttons" aria-label="Account actions"></div>
+        </div>
+    </nav>
+</header>
+
+<!-- ============================================
+     INCLUDE IN YOUR HTML PAGES:
+     ============================================
+     <!-- Load header -->
+     <div id="header-placeholder"></div>
+     
+     <script>
+         // Load header
+         fetch('/src/components/header.html')
+             .then(response => response.text())
+             .then(data => {
+                 document.getElementById('header-placeholder').innerHTML = data;
+             });
+     </script>
+     ============================================ -->

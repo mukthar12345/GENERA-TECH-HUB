@@ -1,0 +1,1327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Products - Genera Tech Hub | Buy Quality Phones & Laptops</title>
+    <meta name="description" content="Shop premium phones, laptops, tablets & accessories at Genera Tech Hub. 100% genuine products with warranty. Technology You Can Trust.">
+    <meta name="keywords" content="buy phones, buy laptops, tech products Nigeria, Genera Tech Hub">
+    <meta name="theme-color" content="#0A1628">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👑</text></svg>">
+    <!-- 👇 ADD THIS LINE RIGHT HERE 👇 -->
+    <link rel="icon" type="image/x-icon" href="/public/images/favicon.ico">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="../../public/css/style.css">
+    
+    <style>
+        /* ================================
+           PRODUCT PAGE STYLES
+           ================================ */
+        
+        /* Header */
+        .products-header {
+            padding-top: 120px;
+            padding-bottom: 2rem;
+            background: var(--gradient-navy);
+            border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+        }
+        
+        .products-header h1 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Search Bar */
+        .search-bar-wrapper {
+            max-width: 700px;
+            margin-top: 1.5rem;
+            position: relative;
+        }
+        
+        .search-bar-wrapper .search-icon {
+            position: absolute;
+            left: 1.2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            pointer-events: none;
+        }
+        
+        .search-bar-wrapper input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            border-radius: 50px;
+            border: 2px solid rgba(255, 215, 0, 0.15);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--white);
+            font-size: 1rem;
+            font-family: inherit;
+            transition: var(--transition-fast);
+        }
+        
+        .search-bar-wrapper input:focus {
+            outline: none;
+            border-color: var(--gold);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.15);
+        }
+        
+        .search-bar-wrapper input::placeholder {
+            color: var(--text-muted);
+        }
+        
+        /* Layout */
+        .products-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 2rem;
+            padding: 2rem 0 4rem;
+        }
+        
+        /* Filter Sidebar */
+        .filter-sidebar {
+            position: sticky;
+            top: 100px;
+            height: fit-content;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+            background: rgba(26, 45, 74, 0.4);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 215, 0, 0.05);
+        }
+        
+        .filter-sidebar::-webkit-scrollbar { width: 4px; }
+        .filter-sidebar::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 2px; }
+        
+        .filter-section {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .filter-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .filter-section h4 {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gold);
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .filter-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+        
+        .filter-option:hover { color: var(--gold); }
+        
+        .filter-option input[type="checkbox"],
+        .filter-option input[type="radio"] {
+            accent-color: var(--gold);
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        /* Price Range */
+        .price-range-container { padding: 0.5rem 0; }
+        
+        .price-range-container .price-display {
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-light);
+            font-size: 0.85rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .price-range-container .price-display span {
+            background: rgba(255, 215, 0, 0.1);
+            padding: 0.3rem 0.8rem;
+            border-radius: var(--radius-sm);
+            color: var(--gold);
+            font-weight: 600;
+        }
+        
+        .price-range-container input[type="range"] {
+            width: 100%;
+            height: 4px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: rgba(255, 215, 0, 0.2);
+            border-radius: 2px;
+            outline: none;
+            margin: 0.5rem 0;
+        }
+        
+        .price-range-container input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--gold);
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+        
+        .price-range-container .price-note {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            text-align: center;
+            font-style: italic;
+        }
+        
+        /* Clear Filters Button */
+        .clear-filters-btn {
+            width: 100%;
+            padding: 0.6rem;
+            background: transparent;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: var(--radius-sm);
+            color: var(--gold);
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .clear-filters-btn:hover {
+            background: rgba(255, 215, 0, 0.1);
+            border-color: var(--gold);
+        }
+        
+        /* Products Area */
+        .products-area { min-width: 0; }
+        
+        /* Toolbar */
+        .products-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            padding: 1rem 1.25rem;
+            background: rgba(26, 45, 74, 0.3);
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(255, 215, 0, 0.05);
+            margin-bottom: 1.5rem;
+        }
+        
+        .products-toolbar .results {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        
+        .products-toolbar .results strong {
+            color: var(--gold);
+            font-size: 1rem;
+        }
+        
+        .products-toolbar .toolbar-right {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .products-toolbar .sort-options {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        
+        .products-toolbar .sort-options label {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+        
+        .products-toolbar .sort-options select {
+            padding: 0.4rem 1rem;
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(255, 215, 0, 0.15);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-light);
+            font-size: 0.85rem;
+            cursor: pointer;
+            outline: none;
+            font-family: inherit;
+        }
+        
+        .products-toolbar .sort-options select:focus {
+            border-color: var(--gold);
+        }
+        
+        .products-toolbar .view-options {
+            display: flex;
+            gap: 0.3rem;
+        }
+        
+        .products-toolbar .view-options button {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: var(--transition-fast);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .products-toolbar .view-options button:hover,
+        .products-toolbar .view-options button.active {
+            border-color: var(--gold);
+            color: var(--gold);
+            background: rgba(255, 215, 0, 0.05);
+        }
+        
+        /* Product Grid */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .products-grid.list-view {
+            grid-template-columns: 1fr;
+        }
+        
+        /* Product Card */
+        .product-card {
+            background: rgba(26, 45, 74, 0.4);
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(255, 215, 0, 0.05);
+            overflow: hidden;
+            transition: var(--transition-med);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--gold);
+            box-shadow: var(--shadow-glow);
+        }
+        
+        /* Grid view image */
+        .product-card .product-image {
+            width: 100%;
+            height: 220px;
+            background: rgba(255, 255, 255, 0.03);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .product-card .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition-med);
+        }
+        
+        .product-card:hover .product-image img {
+            transform: scale(1.05);
+        }
+        
+        /* Badges */
+        .product-card .badges {
+            position: absolute;
+            top: 0.75rem;
+            left: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            z-index: 2;
+        }
+        
+        .product-card .badge {
+            padding: 0.25rem 0.7rem;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            backdrop-filter: blur(5px);
+        }
+        
+        .badge-featured {
+            background: var(--gradient-gold);
+            color: var(--navy-dark);
+        }
+        
+        .badge-new {
+            background: rgba(0, 230, 118, 0.9);
+            color: var(--navy-dark);
+        }
+        
+        .badge-refurbished {
+            background: rgba(0, 188, 212, 0.9);
+            color: var(--white);
+        }
+        
+        .badge-used {
+            background: rgba(255, 193, 7, 0.9);
+            color: var(--navy-dark);
+        }
+        
+        .badge-out-of-stock {
+            background: rgba(255, 23, 68, 0.9);
+            color: var(--white);
+        }
+        
+        /* Product Info */
+        .product-card .product-info {
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+        
+        .product-card .product-category {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.4rem;
+        }
+        
+        .product-card .product-name {
+            color: var(--white);
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+            font-family: var(--font-heading);
+        }
+        
+        /* Specs Row */
+        .product-card .product-specs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .product-card .spec-tag {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 0.2rem 0.6rem;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+        
+        /* Price */
+        .product-card .product-price {
+            color: var(--gold);
+            font-size: 1.3rem;
+            font-weight: 700;
+            font-family: var(--font-heading);
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Stock Status */
+        .product-card .stock-status {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.8rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .product-card .stock-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+        
+        .stock-in { color: #00E676; }
+        .stock-in .stock-dot { background: #00E676; box-shadow: 0 0 8px #00E676; }
+        
+        .stock-out { color: #FF1744; }
+        .stock-out .stock-dot { background: #FF1744; }
+        
+        /* Actions */
+        .product-card .product-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: auto;
+        }
+        
+        .product-card .product-actions .btn {
+            flex: 1;
+            justify-content: center;
+            font-size: 0.85rem;
+            padding: 0.6rem 0.8rem;
+        }
+        
+        .product-card .product-actions .btn-view {
+            background: transparent;
+            color: var(--gold);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .product-card .product-actions .btn-view:hover {
+            background: rgba(255, 215, 0, 0.1);
+            border-color: var(--gold);
+        }
+        
+        .product-card .product-actions .btn-whatsapp {
+            flex: 0.7;
+            background: #25D366;
+            color: var(--white);
+            border: none;
+        }
+        
+        /* List View */
+        .products-grid.list-view .product-card {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+        }
+        
+        .products-grid.list-view .product-card .product-image {
+            height: 100%;
+            min-height: 220px;
+        }
+        
+        .products-grid.list-view .product-card .product-info {
+            padding: 1.5rem;
+        }
+        
+        .products-grid.list-view .product-card .product-name {
+            font-size: 1.3rem;
+        }
+        
+        .products-grid.list-view .product-card .product-price {
+            font-size: 1.5rem;
+        }
+        
+        .products-grid.list-view .product-card .product-actions {
+            max-width: 400px;
+            margin-top: 1rem;
+        }
+        
+        /* No Results */
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+        
+        .no-results .icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        
+        .no-results h3 {
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+        }
+        
+        .no-results p {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+        
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .pagination button {
+            min-width: 40px;
+            height: 40px;
+            padding: 0 0.8rem;
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(255, 215, 0, 0.1);
+            background: transparent;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: var(--transition-fast);
+            font-family: inherit;
+        }
+        
+        .pagination button:hover:not(:disabled),
+        .pagination button.active {
+            background: var(--gold);
+            color: var(--navy-dark);
+            border-color: var(--gold);
+        }
+        
+        .pagination button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        
+        /* Mobile Filter Toggle */
+        .filter-toggle {
+            display: none;
+            width: 100%;
+            padding: 0.8rem;
+            background: var(--gradient-gold);
+            color: var(--navy-dark);
+            border: none;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            margin-bottom: 1rem;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        /* Loading */
+        .loading-container {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .products-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-sidebar {
+                position: fixed;
+                top: 0;
+                left: -100%;
+                width: 320px;
+                height: 100vh;
+                z-index: 9999;
+                padding: 2rem 1.5rem;
+                background: var(--navy-dark);
+                border-right: 1px solid rgba(255, 215, 0, 0.1);
+                border-radius: 0;
+                transition: var(--transition-med);
+            }
+            
+            .filter-sidebar.active { left: 0; }
+            
+            .filter-toggle { display: flex; }
+            
+            .filter-overlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.7);
+                z-index: 9998;
+            }
+            
+            .filter-overlay.active { display: block; }
+        }
+        
+        @media (max-width: 768px) {
+            .products-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+            
+            .products-grid.list-view .product-card {
+                grid-template-columns: 1fr;
+            }
+            
+            .products-grid.list-view .product-card .product-image {
+                min-height: 200px;
+            }
+            
+            .product-card .product-image { height: 180px; }
+            .product-card .product-info { padding: 1rem; }
+            .product-card .product-name { font-size: 0.95rem; }
+            .product-card .product-price { font-size: 1.1rem; }
+            
+            .products-toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .products-toolbar .toolbar-right {
+                justify-content: space-between;
+                width: 100%;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .products-grid { grid-template-columns: 1fr; }
+            .product-card .product-image { height: 220px; }
+        }
+    </style>
+</head>
+<body id="main-content">
+    <!-- HEADER -->
+    <div id="header-placeholder"></div>
+    
+    <!-- PAGE HEADER -->
+    <section class="products-header">
+        <div class="container">
+            <h1>🛍️ Our <span class="text-gold">Products</span></h1>
+            <p style="color: var(--text-muted); font-size: 1.05rem; max-width: 700px;">
+                Premium phones, laptops, tablets & accessories — all with warranty. 
+                <em>Technology You Can Trust.</em>
+            </p>
+            
+            <!-- Search Bar -->
+            <div class="search-bar-wrapper">
+                <span class="search-icon"><i class="fas fa-search"></i></span>
+                <input type="text" id="searchInput" placeholder="Search products... (e.g., iPhone, Samsung, MacBook)" autocomplete="off">
+            </div>
+        </div>
+    </section>
+    
+    <!-- PRODUCTS LAYOUT -->
+    <section class="products-layout container">
+        <!-- Filter Overlay (mobile) -->
+        <div class="filter-overlay" id="filterOverlay"></div>
+        
+        <!-- Filter Sidebar -->
+        <aside class="filter-sidebar" id="filterSidebar">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h3 style="color: var(--gold); font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-sliders-h"></i> Filters
+                </h3>
+                <button id="closeFilters" style="background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; display: none;">✕</button>
+            </div>
+            
+            <!-- Categories -->
+            <div class="filter-section">
+                <h4>📂 Category</h4>
+                <div id="categoryFilters">
+                    <label class="filter-option">
+                        <input type="radio" name="category" value="all" checked> All Products
+                    </label>
+                    <label class="filter-option">
+                        <input type="radio" name="category" value="Phones"> 📱 Phones
+                    </label>
+                    <label class="filter-option">
+                        <input type="radio" name="category" value="Laptops"> 💻 Laptops
+                    </label>
+                    <label class="filter-option">
+                        <input type="radio" name="category" value="Tablets"> 📟 Tablets
+                    </label>
+                    <label class="filter-option">
+                        <input type="radio" name="category" value="Accessories"> 🎧 Accessories
+                    </label>
+                </div>
+            </div>
+            
+            <!-- Brands -->
+            <div class="filter-section">
+                <h4>🏷️ Brand</h4>
+                <div id="brandFilters">
+                    <label class="filter-option"><input type="checkbox" value="Apple"> Apple</label>
+                    <label class="filter-option"><input type="checkbox" value="Samsung"> Samsung</label>
+                    <label class="filter-option"><input type="checkbox" value="Tecno"> Tecno</label>
+                    <label class="filter-option"><input type="checkbox" value="Infinix"> Infinix</label>
+                    <label class="filter-option"><input type="checkbox" value="Google"> Google</label>
+                    <label class="filter-option"><input type="checkbox" value="Xiaomi"> Xiaomi</label>
+                    <label class="filter-option"><input type="checkbox" value="OnePlus"> OnePlus</label>
+                    <label class="filter-option"><input type="checkbox" value="Oppo"> Oppo</label>
+                    <label class="filter-option"><input type="checkbox" value="Vivo"> Vivo</label>
+                    <label class="filter-option"><input type="checkbox" value="HP"> HP</label>
+                    <label class="filter-option"><input type="checkbox" value="Dell"> Dell</label>
+                    <label class="filter-option"><input type="checkbox" value="Lenovo"> Lenovo</label>
+                    <label class="filter-option"><input type="checkbox" value="Acer"> Acer</label>
+                    <label class="filter-option"><input type="checkbox" value="Asus"> Asus</label>
+                    <label class="filter-option"><input type="checkbox" value="Microsoft"> Microsoft</label>
+                </div>
+            </div>
+            
+            <!-- Price Range (UNLIMITED) -->
+            <div class="filter-section">
+                <h4>💰 Price Range</h4>
+                <div class="price-range-container">
+                    <div class="price-display">
+                        <span id="minPriceLabel">₦0</span>
+                        <span id="maxPriceLabel">No Limit</span>
+                    </div>
+                    <input type="range" id="priceRange" min="0" max="10000000" step="50000" value="10000000">
+                    <div class="price-note">Drag to set maximum price</div>
+                </div>
+            </div>
+            
+            <!-- Condition -->
+            <div class="filter-section">
+                <h4>📦 Condition</h4>
+                <label class="filter-option"><input type="checkbox" value="New" checked> ✨ New</label>
+                <label class="filter-option"><input type="checkbox" value="Refurbished" checked> 🔄 Refurbished</label>
+                <label class="filter-option"><input type="checkbox" value="Used" checked> 📱 Used</label>
+            </div>
+            
+            <!-- In Stock Only -->
+            <div class="filter-section">
+                <h4>📊 Availability</h4>
+                <label class="filter-option">
+                    <input type="checkbox" id="inStockOnly"> Show in-stock only
+                </label>
+            </div>
+            
+            <!-- Clear Filters -->
+            <button class="clear-filters-btn" id="clearFilters">
+                <i class="fas fa-undo"></i> Clear All Filters
+            </button>
+        </aside>
+        
+        <!-- Products Area -->
+        <div class="products-area">
+            <!-- Mobile Filter Toggle -->
+            <button class="filter-toggle" id="filterToggle">
+                <i class="fas fa-sliders-h"></i> Filter Products
+            </button>
+            
+            <!-- Toolbar -->
+            <div class="products-toolbar">
+                <div class="results">
+                    Showing <strong id="productCount">0</strong> products
+                </div>
+                <div class="toolbar-right">
+                    <div class="sort-options">
+                        <label for="sortSelect">Sort:</label>
+                        <select id="sortSelect">
+                            <option value="newest">Newest First</option>
+                            <option value="price_low">Price: Low to High</option>
+                            <option value="price_high">Price: High to Low</option>
+                            <option value="name_asc">Name: A-Z</option>
+                        </select>
+                    </div>
+                    <div class="view-options">
+                        <button id="gridView" class="active" title="Grid View">
+                            <i class="fas fa-th"></i>
+                        </button>
+                        <button id="listView" title="List View">
+                            <i class="fas fa-list"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Products Grid -->
+            <div class="products-grid" id="productsContainer">
+                <div class="loading-container">
+                    <div class="loading"></div>
+                    <p style="color: var(--text-muted); margin-top: 1rem;">Loading products...</p>
+                </div>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="pagination" id="pagination"></div>
+        </div>
+    </section>
+    
+    <!-- FOOTER -->
+    <div id="footer-placeholder"></div>
+    
+    <!-- SCRIPTS -->
+    <script>
+        // ============================================
+        // LOAD HEADER & FOOTER
+        // ============================================
+        
+        fetch('../components/header.html')
+            .then(r => r.text())
+            .then(d => document.getElementById('header-placeholder').innerHTML = d)
+            .catch(() => {});
+        
+        fetch('../components/footer.html')
+            .then(r => r.text())
+            .then(d => document.getElementById('footer-placeholder').innerHTML = d)
+            .catch(() => {});
+        
+        // ============================================
+        // LOAD SCRIPTS
+        // ============================================
+        
+        function loadScript(src) {
+            return new Promise((resolve, reject) => {
+                if (document.querySelector(`script[src="${src}"]`)) return resolve();
+                const s = document.createElement('script');
+                s.src = src;
+                s.async = false;
+                s.onload = resolve;
+                s.onerror = () => reject(new Error(`Could not load ${src}`));
+                document.head.appendChild(s);
+            });
+        }
+        
+        (async function init() {
+            try {
+                await loadScript('../../public/js/supabase.js');
+                await loadScript('../../public/js/main.js');
+                console.log('✅ Product page scripts loaded');
+                initProductPage();
+            } catch (err) {
+                console.error('❌ Load error:', err);
+            }
+        })();
+        
+        // ============================================
+        // PRODUCT PAGE LOGIC
+        // ============================================
+        
+        let allProducts = [];
+        let filteredProducts = [];
+        let currentPage = 1;
+        const productsPerPage = 12;
+        let currentView = 'grid';
+        
+        async function initProductPage() {
+            console.log('🛍️ Initializing Product Page...');
+            
+            await loadProducts();
+            setupFilters();
+            setupViewToggle();
+            setupSort();
+            setupSearch();
+            setupMobileFilter();
+            setupPriceRange();
+            setupClearFilters();
+        }
+        
+        async function loadProducts() {
+            try {
+                if (typeof getProducts === 'undefined') {
+                    throw new Error('getProducts not available');
+                }
+                
+                const result = await getProducts();
+                
+                if (result.success) {
+                    allProducts = result.products || [];
+                    filteredProducts = [...allProducts];
+                    console.log(`✅ Loaded ${allProducts.length} products`);
+                    renderProducts();
+                } else {
+                    showError('Failed to load products');
+                }
+            } catch (error) {
+                console.error('❌ Load error:', error);
+                showError('Could not load products');
+            }
+        }
+        
+        function renderProducts() {
+            const container = document.getElementById('productsContainer');
+            
+            if (filteredProducts.length === 0) {
+                container.innerHTML = `
+                    <div class="no-results">
+                        <div class="icon">🔍</div>
+                        <h3>No Products Found</h3>
+                        <p>Try adjusting your filters or search terms.</p>
+                        <button onclick="resetFilters()" class="btn btn-primary">
+                            <i class="fas fa-undo"></i> Reset Filters
+                        </button>
+                    </div>
+                `;
+                document.getElementById('productCount').textContent = '0';
+                document.getElementById('pagination').innerHTML = '';
+                return;
+            }
+            
+            // Pagination
+            const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+            const start = (currentPage - 1) * productsPerPage;
+            const end = Math.min(start + productsPerPage, filteredProducts.length);
+            const pageProducts = filteredProducts.slice(start, end);
+            
+            document.getElementById('productCount').textContent = filteredProducts.length;
+            
+            // Build cards
+            container.innerHTML = pageProducts.map(p => buildProductCard(p)).join('');
+            
+            renderPagination(totalPages);
+            
+            if (typeof initAnimations === 'function') setTimeout(initAnimations, 100);
+        }
+        
+        function buildProductCard(product) {
+            const imageUrl = product.image_urls && product.image_urls.length > 0 
+                ? product.image_urls[0] 
+                : 'https://via.placeholder.com/400x300/1A2D4A/FFD700?text=Genera+Tech';
+            
+            const price = new Intl.NumberFormat('en-NG', {
+                style: 'currency',
+                currency: 'NGN',
+                minimumFractionDigits: 0
+            }).format(product.price);
+            
+            // Badges
+            const badges = [];
+            if (product.is_featured) badges.push('<span class="badge badge-featured">⭐ Featured</span>');
+            if (product.condition === 'New') badges.push('<span class="badge badge-new">✨ New</span>');
+            else if (product.condition === 'Refurbished') badges.push('<span class="badge badge-refurbished">🔄 Refurbished</span>');
+            else if (product.condition === 'Used') badges.push('<span class="badge badge-used">📱 Used</span>');
+            if (product.stock_quantity === 0) badges.push('<span class="badge badge-out-of-stock">❌ Out of Stock</span>');
+            
+            // Spec tags
+            const specs = [];
+            if (product.brand) specs.push(product.brand);
+            if (product.storage) specs.push(product.storage);
+            if (product.color) specs.push(product.color);
+            
+            // Stock
+            const stockClass = product.stock_quantity > 0 ? 'stock-in' : 'stock-out';
+            const stockText = product.stock_quantity > 0 
+                ? `In Stock (${product.stock_quantity})` 
+                : 'Out of Stock';
+            
+            // WhatsApp message
+            const waMessage = encodeURIComponent(
+                `Hi Genera Tech Hub! I'm interested in ${product.name} - ${price}. Is it available?`
+            );
+            
+            return `
+                <div class="product-card fade-in">
+                    <div class="product-image">
+                        ${badges.length > 0 ? `<div class="badges">${badges.join('')}</div>` : ''}
+                        <img src="${imageUrl}" alt="${product.name}" loading="lazy"
+                             onerror="this.src='https://via.placeholder.com/400x300/1A2D4A/FFD700?text=Genera+Tech'">
+                    </div>
+                    <div class="product-info">
+                        <div class="product-category">${product.category || 'Other'}</div>
+                        <h3 class="product-name">${product.name}</h3>
+                        
+                        ${specs.length > 0 ? `
+                            <div class="product-specs">
+                                ${specs.map(s => `<span class="spec-tag">${s}</span>`).join('')}
+                            </div>
+                        ` : ''}
+                        
+                        <div class="product-price">${price}</div>
+                        
+                        <div class="stock-status ${stockClass}">
+                            <span class="stock-dot"></span>
+                            <span>${stockText}</span>
+                        </div>
+                        
+                        <div class="product-actions">
+                            <a href="/src/pages/product-detail.html?id=${product.id}" class="btn btn-view">
+                                <i class="fas fa-eye"></i> View
+                            </a>
+                            <a href="https://wa.me/2348081302228?text=${waMessage}" 
+                               target="_blank" class="btn btn-whatsapp">
+                                <i class="fab fa-whatsapp"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // ============================================
+        // FILTERS
+        // ============================================
+        
+        function setupFilters() {
+            // Category
+            document.querySelectorAll('input[name="category"]').forEach(input => {
+                input.addEventListener('change', applyFilters);
+            });
+            
+            // Brands
+            document.querySelectorAll('#brandFilters input').forEach(input => {
+                input.addEventListener('change', applyFilters);
+            });
+            
+            // Condition
+            document.querySelectorAll('.filter-section input[value="New"], .filter-section input[value="Refurbished"], .filter-section input[value="Used"]')
+                .forEach(input => {
+                    input.addEventListener('change', applyFilters);
+                });
+            
+            // In stock
+            const inStock = document.getElementById('inStockOnly');
+            if (inStock) inStock.addEventListener('change', applyFilters);
+        }
+        
+        function applyFilters() {
+            const category = document.querySelector('input[name="category"]:checked')?.value || 'all';
+            const selectedBrands = Array.from(document.querySelectorAll('#brandFilters input:checked')).map(el => el.value);
+            const selectedConditions = Array.from(
+                document.querySelectorAll('.filter-section input[value="New"], .filter-section input[value="Refurbished"], .filter-section input[value="Used"]')
+            ).filter(el => el.checked).map(el => el.value);
+            const inStockOnly = document.getElementById('inStockOnly')?.checked || false;
+            const searchTerm = (document.getElementById('searchInput')?.value || '').toLowerCase().trim();
+            const maxPrice = parseInt(document.getElementById('priceRange')?.value) || 10000000;
+            
+            filteredProducts = allProducts.filter(product => {
+                // Category
+                if (category !== 'all' && product.category !== category) return false;
+                
+                // Brand
+                if (selectedBrands.length > 0 && !selectedBrands.includes(product.brand)) return false;
+                
+                // Condition
+                if (selectedConditions.length > 0 && !selectedConditions.includes(product.condition)) return false;
+                
+                // Price
+                if (product.price > maxPrice) return false;
+                
+                // Stock
+                if (inStockOnly && product.stock_quantity <= 0) return false;
+                
+                // Search
+                if (searchTerm) {
+                    const searchable = `${product.name} ${product.brand} ${product.model} ${product.category} ${product.description}`.toLowerCase();
+                    if (!searchable.includes(searchTerm)) return false;
+                }
+                
+                return true;
+            });
+            
+            applySort();
+            currentPage = 1;
+            renderProducts();
+        }
+        
+        function resetFilters() {
+            document.querySelector('input[name="category"][value="all"]').checked = true;
+            document.querySelectorAll('#brandFilters input').forEach(el => el.checked = false);
+            document.querySelectorAll('.filter-section input[value="New"], .filter-section input[value="Refurbished"], .filter-section input[value="Used"]')
+                .forEach(el => el.checked = true);
+            const inStock = document.getElementById('inStockOnly');
+            if (inStock) inStock.checked = false;
+            document.getElementById('searchInput').value = '';
+            document.getElementById('priceRange').value = 10000000;
+            updatePriceDisplay();
+            applyFilters();
+        }
+        
+        // ============================================
+        // PRICE RANGE (UNLIMITED)
+        // ============================================
+        
+        function setupPriceRange() {
+            const range = document.getElementById('priceRange');
+            range.addEventListener('input', () => {
+                updatePriceDisplay();
+                applyFilters();
+            });
+        }
+        
+        function updatePriceDisplay() {
+            const range = document.getElementById('priceRange');
+            const val = parseInt(range.value);
+            const maxLabel = document.getElementById('maxPriceLabel');
+            
+            if (val >= 10000000) {
+                maxLabel.textContent = 'No Limit';
+            } else {
+                maxLabel.textContent = new Intl.NumberFormat('en-NG', {
+                    style: 'currency', currency: 'NGN', minimumFractionDigits: 0
+                }).format(val);
+            }
+        }
+        
+        // ============================================
+        // SEARCH
+        // ============================================
+        
+        function setupSearch() {
+            const input = document.getElementById('searchInput');
+            let timeout;
+            input.addEventListener('input', () => {
+                clearTimeout(timeout);
+                timeout = setTimeout(applyFilters, 300);
+            });
+        }
+        
+        // ============================================
+        // SORT
+        // ============================================
+        
+        function setupSort() {
+            document.getElementById('sortSelect').addEventListener('change', applySort);
+        }
+        
+        function applySort() {
+            const sortBy = document.getElementById('sortSelect').value;
+            
+            switch (sortBy) {
+                case 'newest':
+                    filteredProducts.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                    break;
+                case 'price_low':
+                    filteredProducts.sort((a, b) => a.price - b.price);
+                    break;
+                case 'price_high':
+                    filteredProducts.sort((a, b) => b.price - a.price);
+                    break;
+                case 'name_asc':
+                    filteredProducts.sort((a, b) => String(a.name).localeCompare(String(b.name)));
+                    break;
+            }
+            
+            renderProducts();
+        }
+        
+        // ============================================
+        // VIEW TOGGLE
+        // ============================================
+        
+        function setupViewToggle() {
+            const gridBtn = document.getElementById('gridView');
+            const listBtn = document.getElementById('listView');
+            const container = document.getElementById('productsContainer');
+            
+            gridBtn.addEventListener('click', () => {
+                gridBtn.classList.add('active');
+                listBtn.classList.remove('active');
+                container.classList.remove('list-view');
+            });
+            
+            listBtn.addEventListener('click', () => {
+                listBtn.classList.add('active');
+                gridBtn.classList.remove('active');
+                container.classList.add('list-view');
+            });
+        }
+        
+        // ============================================
+        // MOBILE FILTER
+        // ============================================
+        
+        function setupMobileFilter() {
+            const toggle = document.getElementById('filterToggle');
+            const sidebar = document.getElementById('filterSidebar');
+            const overlay = document.getElementById('filterOverlay');
+            const closeBtn = document.getElementById('closeFilters');
+            
+            function open() {
+                sidebar.classList.add('active');
+                overlay.classList.add('active');
+                closeBtn.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            }
+            
+            function close() {
+                sidebar.classList.remove('active');
+                overlay.classList.remove('active');
+                closeBtn.style.display = 'none';
+                document.body.style.overflow = '';
+            }
+            
+            toggle.addEventListener('click', open);
+            overlay.addEventListener('click', close);
+            closeBtn.addEventListener('click', close);
+            
+            // Auto-close on filter apply (mobile)
+            document.querySelectorAll('.filter-option input').forEach(input => {
+                input.addEventListener('change', () => {
+                    if (window.innerWidth <= 1024) setTimeout(close, 300);
+                });
+            });
+        }
+        
+        // ============================================
+        // CLEAR FILTERS
+        // ============================================
+        
+        function setupClearFilters() {
+            document.getElementById('clearFilters').addEventListener('click', resetFilters);
+        }
+        
+        // ============================================
+        // PAGINATION
+        // ============================================
+        
+        function renderPagination(totalPages) {
+            const container = document.getElementById('pagination');
+            if (totalPages <= 1) {
+                container.innerHTML = '';
+                return;
+            }
+            
+            let html = `
+                <button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+            `;
+            
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === currentPage) {
+                    html += `<button class="active">${i}</button>`;
+                } else if (i <= 3 || i > totalPages - 2 || Math.abs(i - currentPage) <= 1) {
+                    html += `<button onclick="changePage(${i})">${i}</button>`;
+                } else if (i === 4 && currentPage > 4) {
+                    html += `<span style="color: var(--text-muted); padding: 0 0.5rem;">...</span>`;
+                }
+            }
+            
+            html += `
+                <button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            `;
+            
+            container.innerHTML = html;
+        }
+        
+        function changePage(page) {
+            const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+            if (page < 1 || page > totalPages) return;
+            currentPage = page;
+            renderProducts();
+            window.scrollTo({ top: 200, behavior: 'smooth' });
+        }
+        
+        // ============================================
+        // ERROR
+        // ============================================
+        
+        function showError(message) {
+            document.getElementById('productsContainer').innerHTML = `
+                <div class="no-results">
+                    <div class="icon">⚠️</div>
+                    <h3>Something Went Wrong</h3>
+                    <p>${message}</p>
+                    <button onclick="location.reload()" class="btn btn-primary">
+                        <i class="fas fa-redo"></i> Retry
+                    </button>
+                </div>
+            `;
+        }
+        
+        // Expose globally
+        window.changePage = changePage;
+        window.resetFilters = resetFilters;
+        
+        console.log('✅ Product page ready');
+    </script>
+</body>
+</html>
