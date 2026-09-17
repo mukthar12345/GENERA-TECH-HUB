@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Contact Us - Genera Tech Hub | Technology You Can Trust</title>
+    <meta name="description" content="Contact Genera Tech Hub for inquiries about products, repairs, trade-ins, and more. We're here to help!">
+    <meta name="keywords" content="contact Genera Tech Hub, tech support, phone repair contact">
+    <meta name="theme-color" content="#0A1628">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👑</text></svg>">
+     <!-- 👇 ADD THIS LINE RIGHT HERE 👇 -->
+    <link rel="icon" type="image/x-icon" href="/public/images/favicon.ico">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="../../public/css/style.css">
+    
+    <style>
+        .contact-header {
+            padding-top: 120px;
+            padding-bottom: 2rem;
+            background: var(--gradient-navy);
+            border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+        }
+        
+        .contact-header h1 { font-size: clamp(2rem, 4vw, 3rem); }
+        
+        .contact-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            padding: 3rem 0 4rem;
+        }
+        
+        /* Contact Info Cards */
+        .contact-info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .info-card {
+            background: rgba(26, 45, 74, 0.4);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 215, 0, 0.05);
+            text-align: center;
+            transition: var(--transition-fast);
+        }
+        
+        .info-card:hover {
+            border-color: var(--gold);
+            transform: translateY(-3px);
+        }
+        
+        .info-card .icon {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        
+        .info-card h4 {
+            font-size: 0.85rem;
+            color: var(--gold);
+            margin-bottom: 0.3rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .info-card p {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            word-break: break-word;
+        }
+        
+        .info-card a {
+            color: var(--gold);
+            text-decoration: none;
+        }
+        
+        /* Business Hours */
+        .hours-card {
+            background: rgba(26, 45, 74, 0.4);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 215, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+        
+        .hours-card h4 {
+            color: var(--gold);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .hours-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .hours-table td {
+            padding: 0.5rem 0;
+            color: var(--text-light);
+            font-size: 0.9rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+        
+        .hours-table td:last-child {
+            color: var(--text-muted);
+            text-align: right;
+        }
+        
+        .hours-table tr:last-child td { border-bottom: none; }
+        
+        /* Quick Contact Buttons */
+        .quick-contact {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .quick-contact .btn {
+            justify-content: center;
+            padding: 1rem;
+        }
+        
+        /* Form */
+        .contact-form-container {
+            background: rgba(26, 45, 74, 0.4);
+            border-radius: var(--radius-md);
+            padding: 2rem;
+            border: 1px solid rgba(255, 215, 0, 0.05);
+        }
+        
+        .contact-form-container h2 {
+            margin-bottom: 0.3rem;
+        }
+        
+        .contact-form-container .subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group { margin-bottom: 1.25rem; }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.4rem;
+            font-weight: 500;
+            color: var(--text-light);
+            font-size: 0.95rem;
+        }
+        
+        .form-group label .required { color: var(--gold); }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.8rem 1.2rem;
+            border-radius: var(--radius-sm);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--white);
+            font-size: 1rem;
+            transition: var(--transition-fast);
+            font-family: inherit;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--gold);
+            background: rgba(255, 255, 255, 0.08);
+        }
+        
+        .form-control::placeholder { color: var(--text-muted); }
+        
+        select.form-control {
+            appearance: none;
+            cursor: pointer;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23FFD700' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            padding-right: 2.5rem;
+        }
+        
+        textarea.form-control { min-height: 120px; resize: vertical; }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1rem;
+            font-weight: 600;
+            justify-content: center;
+        }
+        
+        /* Success */
+        .success-message {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .success-message .icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        
+        .success-message h3 {
+            color: #00E676;
+            margin-bottom: 0.5rem;
+        }
+        
+        .success-message p {
+            color: var(--text-muted);
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        
+        /* Map Placeholder */
+        .map-container {
+            background: rgba(26, 45, 74, 0.4);
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(255, 215, 0, 0.05);
+            overflow: hidden;
+            margin-bottom: 2rem;
+            height: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+        }
+        
+        .map-container .icon {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .contact-layout { grid-template-columns: 1fr; gap: 2rem; }
+            .contact-info-grid { grid-template-columns: repeat(4, 1fr); }
+        }
+        
+        @media (max-width: 768px) {
+            .contact-info-grid { grid-template-columns: 1fr 1fr; }
+            .contact-form-container { padding: 1.5rem; }
+            .form-row { grid-template-columns: 1fr; gap: 0; }
+            .quick-contact { grid-template-columns: 1fr; }
+        }
+        
+        @media (max-width: 480px) {
+            .contact-info-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body id="main-content">
+    <div id="header-placeholder"></div>
+    
+    <section class="contact-header">
+        <div class="container">
+            <h1>📞 Contact <span class="text-gold">Us</span></h1>
+            <p style="color: var(--text-muted); font-size: 1.05rem; max-width: 700px;">
+                Have questions? Need help? We're here for you. <em>Technology You Can Trust.</em>
+            </p>
+        </div>
+    </section>
+    
+    <section class="contact-layout container">
+        <!-- LEFT: CONTACT INFO -->
+        <div>
+            <div class="contact-info-grid">
+                <div class="info-card">
+                    <span class="icon">📞</span>
+                    <h4>Phone</h4>
+                    <p><a href="tel:08081302228">08081302228</a></p>
+                </div>
+                <div class="info-card">
+                    <span class="icon">💬</span>
+                    <h4>WhatsApp</h4>
+                    <p><a href="https://wa.me/2348081302228" target="_blank">Chat Now</a></p>
+                </div>
+                <div class="info-card">
+                    <span class="icon">✉️</span>
+                    <h4>Email</h4>
+                    <p><a href="mailto:info@generatechub.com">info@generatechub.com</a></p>
+                </div>
+                <div class="info-card">
+                    <span class="icon">📍</span>
+                    <h4>Location</h4>
+                    <p>Nigeria</p>
+                </div>
+            </div>
+            
+            <!-- Map Placeholder -->
+            <div class="map-container">
+                <span class="icon">🗺️</span>
+                <p style="font-size: 0.9rem;">Find us on Google Maps</p>
+                <p style="font-size: 0.8rem; opacity: 0.7;">Chat on WhatsApp for directions</p>
+            </div>
+            
+            <!-- Business Hours -->
+            <div class="hours-card">
+                <h4>🕐 Business Hours</h4>
+                <table class="hours-table">
+                    <tr><td>Monday - Friday</td><td>8:00 AM - 8:00 PM</td></tr>
+                    <tr><td>Saturday</td><td>8:00 AM - 8:00 PM</td></tr>
+                    <tr><td>Sunday</td><td>By Appointment</td></tr>
+                    <tr><td>WhatsApp Support</td><td>24/7</td></tr>
+                </table>
+            </div>
+            
+            <!-- Quick Contact -->
+            <div class="quick-contact">
+                <a href="https://wa.me/2348081302228" target="_blank" class="btn btn-whatsapp">
+                    <i class="fab fa-whatsapp"></i> WhatsApp
+                </a>
+                <a href="tel:08081302228" class="btn btn-primary">
+                    <i class="fas fa-phone"></i> Call Now
+                </a>
+            </div>
+        </div>
+        
+        <!-- RIGHT: FORM -->
+        <div class="contact-form-container">
+            <h2>📝 Send Us a Message</h2>
+            <p class="subtitle">Fill in the form and we'll reply on WhatsApp within minutes.</p>
+            
+            <form id="contactForm" novalidate>
+                <div id="contactFormContent">
+                    <div class="form-group">
+                        <label for="contactName">Full Name <span class="required">*</span></label>
+                        <input type="text" id="contactName" name="name" class="form-control" 
+                               placeholder="Enter your full name" required>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="contactPhone">Phone Number <span class="required">*</span></label>
+                            <input type="tel" id="contactPhone" name="phone" class="form-control" 
+                                   placeholder="08012345678" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="contactEmail">Email Address</label>
+                            <input type="email" id="contactEmail" name="email" class="form-control" 
+                                   placeholder="you@email.com">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="contactSubject">Subject</label>
+                        <select id="contactSubject" name="subject" class="form-control">
+                            <option value="General Inquiry">General Inquiry</option>
+                            <option value="Product Inquiry">Product Inquiry</option>
+                            <option value="Repair Request">Repair Request</option>
+                            <option value="Trade-in Inquiry">Trade-in Inquiry</option>
+                            <option value="Partnership">Partnership</option>
+                            <option value="Feedback">Feedback</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="contactMessage">Message <span class="required">*</span></label>
+                        <textarea id="contactMessage" name="message" class="form-control" 
+                                  placeholder="How can we help you?" required></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary submit-btn">
+                        <i class="fas fa-paper-plane"></i> Send Message
+                    </button>
+                    
+                    <p style="text-align: center; color: var(--text-muted); font-size: 0.85rem; margin-top: 0.8rem;">
+                        <i class="fas fa-lock"></i> Your message goes directly to our WhatsApp
+                    </p>
+                </div>
+                
+                <div class="success-message" id="contactSuccess">
+                    <div class="icon">✅</div>
+                    <h3>Message Sent!</h3>
+                    <p>We'll get back to you on WhatsApp shortly.</p>
+                    <button type="button" class="btn btn-primary" onclick="resetContactForm()" style="margin-top: 1rem;">
+                        <i class="fas fa-redo"></i> Send Another
+                    </button>
+                </div>
+            </form>
+        </div>
+    </section>
+    
+    <div id="footer-placeholder"></div>
+    
+    <script>
+        // Load header/footer
+        fetch('../components/header.html').then(r => r.text()).then(d => {
+            document.getElementById('header-placeholder').innerHTML = d;
+        }).catch(() => {});
+        fetch('../components/footer.html').then(r => r.text()).then(d => {
+            document.getElementById('footer-placeholder').innerHTML = d;
+        }).catch(() => {});
+        
+        // Load scripts
+        function loadScript(src) {
+            return new Promise((resolve, reject) => {
+                if (document.querySelector(`script[src="${src}"]`)) return resolve();
+                const s = document.createElement('script');
+                s.src = src;
+                s.async = false;
+                s.onload = resolve;
+                s.onerror = () => reject(new Error(`Could not load ${src}`));
+                document.head.appendChild(s);
+            });
+        }
+        
+        (async function init() {
+            try {
+                await loadScript('../../public/js/supabase.js');
+                await loadScript('../../public/js/main.js');
+                console.log('✅ Contact page loaded');
+                setupContactForm();
+            } catch (err) {
+                console.error('❌ Load error:', err);
+            }
+        })();
+        
+        let isSubmitting = false;
+        
+        function setupContactForm() {
+            const form = document.getElementById('contactForm');
+            
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                if (isSubmitting) return;
+                
+                const name = document.getElementById('contactName').value.trim();
+                const phone = document.getElementById('contactPhone').value.trim();
+                const email = document.getElementById('contactEmail').value.trim();
+                const subject = document.getElementById('contactSubject').value;
+                const message = document.getElementById('contactMessage').value.trim();
+                
+                // Validate
+                if (!name || name.length < 2) {
+                    if (typeof showToast !== 'undefined') showToast('⚠️ Please enter your full name.', 'error');
+                    document.getElementById('contactName').focus();
+                    return;
+                }
+                
+                if (!phone) {
+                    if (typeof showToast !== 'undefined') showToast('⚠️ Please enter your phone number.', 'error');
+                    document.getElementById('contactPhone').focus();
+                    return;
+                }
+                
+                if (!/^(0|\+234)?[789][01]\d{8}$/.test(phone.replace(/\s/g, ''))) {
+                    if (typeof showToast !== 'undefined') showToast('⚠️ Please enter a valid Nigerian phone number.', 'error');
+                    document.getElementById('contactPhone').focus();
+                    return;
+                }
+                
+                if (!message || message.length < 10) {
+                    if (typeof showToast !== 'undefined') showToast('⚠️ Please write a message (min 10 characters).', 'error');
+                    document.getElementById('contactMessage').focus();
+                    return;
+                }
+                
+                isSubmitting = true;
+                const btn = form.querySelector('button[type="submit"]');
+                const originalText = btn.innerHTML;
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+                
+                try {
+                    // Save to Supabase
+                    try {
+                        if (typeof submitContactMessage !== 'undefined') {
+                            await submitContactMessage({ name, phone, email: email || null, subject, message });
+                        }
+                    } catch (dbErr) {
+                        console.warn('DB save warning:', dbErr);
+                    }
+                    
+                    // Build WhatsApp message
+                    const now = new Date();
+                    const waMessage = `📞 *CONTACT FORM — GENERA TECH HUB*\n` +
+                        `_Technology You Can Trust_\n\n` +
+                        `━━━━━━━━━━━━━━━━━━━\n` +
+                        `👤 *CUSTOMER DETAILS*\n` +
+                        `━━━━━━━━━━━━━━━━━━━\n` +
+                        `• Name: ${name}\n` +
+                        `• Phone: ${phone}\n` +
+                        (email ? `• Email: ${email}\n` : '') +
+                        `\n📋 *SUBJECT:* ${subject}\n` +
+                        `\n💬 *MESSAGE:*\n${message}\n` +
+                        `\n━━━━━━━━━━━━━━━━━━━\n` +
+                        `📅 ${now.toLocaleDateString('en-NG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}\n` +
+                        `🕐 ${now.toLocaleTimeString('en-NG')}\n` +
+                        `\n_Submitted from Genera Tech Hub website_\n` +
+                        `_Genera Tech Hub — Technology You Can Trust_ 👑`;
+                    
+                    if (typeof openWhatsApp !== 'undefined') {
+                        openWhatsApp(waMessage);
+                    } else {
+                        window.open(`https://wa.me/2348081302228?text=${encodeURIComponent(waMessage)}`, '_blank');
+                    }
+                    
+                    // Success
+                    document.getElementById('contactFormContent').style.display = 'none';
+                    document.getElementById('contactSuccess').style.display = 'block';
+                    
+                    if (typeof showToast !== 'undefined') showToast('✅ Message sent!', 'success');
+                    
+                } catch (error) {
+                    console.error('❌ Error:', error);
+                    if (typeof showToast !== 'undefined') showToast('❌ Something went wrong.', 'error');
+                } finally {
+                    isSubmitting = false;
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                }
+            });
+        }
+        
+        function resetContactForm() {
+            document.getElementById('contactFormContent').style.display = 'block';
+            document.getElementById('contactSuccess').style.display = 'none';
+            document.getElementById('contactForm').reset();
+        }
+        
+        window.resetContactForm = resetContactForm;
+    </script>
+</body>
+</html>

@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>About Us - Genera Tech Hub | Technology You Can Trust</title>
+    <meta name="description" content="Learn about Genera Tech Hub - Your trusted technology partner. Founded by Mudasiru Mukthar to make quality tech accessible to all Nigerians.">
+    <meta name="keywords" content="about Genera Tech Hub, Mudasiru Mukthar, tech hub Nigeria">
+    <meta name="theme-color" content="#0A1628">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👑</text></svg>">
+     <!-- 👇 ADD THIS LINE RIGHT HERE 👇 -->
+    <link rel="icon" type="image/x-icon" href="/public/images/favicon.ico">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="../../public/css/style.css">
+    
+    <style>
+        .about-header {
+            padding-top: 120px;
+            padding-bottom: 2rem;
+            background: var(--gradient-navy);
+            border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+        }
+        
+        .about-header h1 { font-size: clamp(2rem, 4vw, 3rem); }
+        
+        .about-section {
+            padding: 4rem 0;
+        }
+        
+        .about-section:nth-child(even) {
+            background: rgba(26, 45, 74, 0.15);
+        }
+        
+        /* Our Story */
+        .story-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+        
+        .story-content h2 {
+            margin-bottom: 1.5rem;
+        }
+        
+        .story-content h2 .highlight { color: var(--gold); }
+        
+        .story-content p {
+            color: var(--text-light);
+            font-size: 1.05rem;
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+        
+        .story-content .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 1.5rem 0;
+        }
+        
+        .story-content .feature-list li {
+            color: var(--text-light);
+            padding: 0.5rem 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            font-size: 1rem;
+        }
+        
+        .story-content .feature-list li::before {
+            content: '✅';
+            flex-shrink: 0;
+        }
+        
+        .story-image {
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            height: 400px;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(26, 45, 74, 0.6));
+            border: 1px solid rgba(255, 215, 0, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .story-image .icon {
+            font-size: 5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .story-image h3 {
+            color: var(--gold);
+            margin-bottom: 0.5rem;
+        }
+        
+        .story-image p {
+            color: var(--text-light);
+            font-size: 0.95rem;
+        }
+        
+        /* Mission & Vision */
+        .mission-vision-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .mission-card {
+            background: rgba(26, 45, 74, 0.4);
+            border-radius: var(--radius-md);
+            padding: 2.5rem;
+            border: 1px solid rgba(255, 215, 0, 0.05);
+            text-align: center;
+            transition: var(--transition-fast);
+        }
+        
+        .mission-card:hover {
+            border-color: var(--gold);
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-glow);
+        }
+        
+        .mission-card .icon {
+            font-size: 3.5rem;
+            display: block;
+            margin-bottom: 1rem;
+        }
+        
+        .mission-card h3 {
+            color: var(--gold);
+            margin-bottom: 0.75rem;
+        }
+        
+        .mission-card p {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+        
+        /* Values */
+        .values-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .value-item {
+            background: rgba(26, 45, 74, 0.4);
+            border-radius: var(--radius-md);
+            padding: 2rem 1.5rem;
+            text-align: center;
+            border: 1px solid rgba(255, 215, 0, 0.05);
+            transition: var(--transition-fast);
+        }
+        
+        .value-item:hover {
+            border-color: var(--gold);
+            transform: translateY(-5px);
+        }
+        
+        .value-item .icon {
+            font-size: 2.5rem;
+            display: block;
+            margin-bottom: 0.75rem;
+        }
+        
+        .value-item h4 {
+            color: var(--gold);
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .value-item p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+        
+        /* CEO Section */
+        .ceo-section {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 3rem;
+            align-items: center;
+            background: rgba(26, 45, 74, 0.4);
+            border-radius: var(--radius-lg);
+            padding: 3rem;
+            border: 1px solid rgba(255, 215, 0, 0.1);
+            max-width: 900px;
+            margin: 2rem auto 0;
+        }
+        
+        .ceo-avatar {
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            background: var(--gradient-gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 6rem;
+            font-family: var(--font-heading);
+            font-weight: 900;
+            color: var(--navy-dark);
+            border: 4px solid rgba(255, 215, 0, 0.3);
+            box-shadow: 0 10px 40px rgba(255, 215, 0, 0.3);
+            margin: 0 auto;
+        }
+        
+        .ceo-info h3 {
+            color: var(--gold);
+            font-size: 1.8rem;
+            margin-bottom: 0.3rem;
+        }
+        
+        .ceo-info .role {
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .ceo-info .bio {
+            color: var(--text-light);
+            font-size: 1rem;
+            line-height: 1.8;
+        }
+        
+        .ceo-info .contact-row {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .ceo-info .contact-row .btn {
+            padding: 0.6rem 1.2rem;
+            font-size: 0.9rem;
+        }
+        
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+            margin-top: 2rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, var(--gold), rgba(255, 215, 0, 0.2));
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-bottom: 2rem;
+            padding-left: 2rem;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -2rem;
+            top: 0.3rem;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: var(--gold);
+            border: 3px solid var(--navy-dark);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+        }
+        
+        .timeline-item:last-child { padding-bottom: 0; }
+        
+        .timeline-item .year {
+            font-weight: 700;
+            color: var(--gold);
+            font-family: var(--font-heading);
+            font-size: 1.2rem;
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+        
+        .timeline-item .event {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        
+        /* Stats */
+        .stats-grid-about {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 2rem 1rem;
+            background: rgba(26, 45, 74, 0.4);
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(255, 215, 0, 0.05);
+        }
+        
+        .stat-item .number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--gold);
+            font-family: var(--font-heading);
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-item .label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        
+        /* CTA */
+        .about-cta {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(26, 45, 74, 0.6));
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            margin-top: 2rem;
+        }
+        
+        .about-cta h2 {
+            margin-bottom: 1rem;
+        }
+        
+        .about-cta p {
+            color: var(--text-light);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+        
+        .about-cta .buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .story-grid { grid-template-columns: 1fr; gap: 2rem; }
+            .story-image { height: 300px; }
+            .mission-vision-grid { grid-template-columns: 1fr; }
+            .ceo-section { grid-template-columns: 1fr; text-align: center; gap: 2rem; }
+            .ceo-info .contact-row { justify-content: center; }
+            .stats-grid-about { grid-template-columns: repeat(2, 1fr); }
+        }
+        
+        @media (max-width: 768px) {
+            .about-section { padding: 2.5rem 0; }
+            .ceo-avatar { width: 180px; height: 180px; font-size: 4rem; }
+            .values-grid { grid-template-columns: 1fr 1fr; }
+            .about-cta .buttons { flex-direction: column; }
+            .about-cta .buttons .btn { width: 100%; }
+        }
+        
+        @media (max-width: 480px) {
+            .values-grid { grid-template-columns: 1fr; }
+            .stats-grid-about { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body id="main-content">
+    <div id="header-placeholder"></div>
+    
+    <!-- HEADER -->
+    <section class="about-header">
+        <div class="container">
+            <h1>🏢 About <span class="text-gold">Genera Tech Hub</span></h1>
+            <p style="color: var(--text-muted); font-size: 1.1rem; max-width: 700px;">
+                Your trusted technology partner. <em>Technology You Can Trust.</em>
+            </p>
+        </div>
+    </section>
+    
+    <!-- OUR STORY -->
+    <section class="about-section">
+        <div class="container">
+            <div class="story-grid">
+                <div class="story-content">
+                    <h2>Our <span class="highlight">Story</span></h2>
+                    <p>
+                        <strong>Genera Tech Hub</strong> was founded in <strong>2026</strong> with a simple yet powerful vision: 
+                        to make quality technology accessible, affordable, and reliable for everyone in Nigeria.
+                    </p>
+                    <p>
+                        What started as a passion for technology has grown into a trusted tech hub 
+                        serving customers across Nigeria. From day one, we've built our reputation 
+                        on transparency, quality, and exceptional customer service.
+                    </p>
+                    <p>
+                        Today, <strong>Genera Tech Hub</strong> is the go-to destination for buying, 
+                        selling, repairing, and swapping phones, laptops, and accessories. We're 
+                        proud to be a part of Nigeria's growing tech ecosystem.
+                    </p>
+                    <ul class="feature-list">
+                        <li>Quality products — 100% genuine devices</li>
+                        <li>Unique prices — best value in the market</li>
+                        <li>Expert repairs with warranty</li>
+                        <li>Trusted by hundreds of customers</li>
+                    </ul>
+                </div>
+                <div class="story-image">
+                    <span class="icon">🔧</span>
+                    <h3>Genera Tech Hub</h3>
+                    <p>Technology You Can Trust</p>
+                    <p style="margin-top: 1rem; font-size: 0.85rem; color: var(--text-muted);">
+                        📍 Nigeria<br>
+                        📅 Established 2026
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- MISSION & VISION -->
+    <section class="about-section">
+        <div class="container">
+            <h2 class="text-center" style="margin-bottom: 0.5rem;">
+                Our <span class="text-gold">Mission & Vision</span>
+            </h2>
+            <p class="text-center text-muted" style="font-size: 1.05rem; max-width: 600px; margin: 0 auto 1rem;">
+                Driving technology forward with integrity and excellence
+            </p>
+            
+            <div class="mission-vision-grid">
+                <div class="mission-card">
+                    <span class="icon">🎯</span>
+                    <h3>Our Mission</h3>
+                    <p>
+                        To provide quality technology products and services that are accessible, 
+                        affordable, and reliable to every Nigerian, while building trust through 
+                        transparency and exceptional customer care.
+                    </p>
+                </div>
+                <div class="mission-card">
+                    <span class="icon">👁️</span>
+                    <h3>Our Vision</h3>
+                    <p>
+                        To become Nigeria's most trusted technology hub, known for innovation, 
+                        integrity, and excellence — the first name people think of when they need 
+                        quality tech.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- OUR VALUES -->
+    <section class="about-section">
+        <div class="container">
+            <h2 class="text-center" style="margin-bottom: 0.5rem;">
+                Our <span class="text-gold">Core Values</span>
+            </h2>
+            <p class="text-center text-muted" style="font-size: 1.05rem; max-width: 600px; margin: 0 auto 1rem;">
+                The principles that guide everything we do
+            </p>
+            
+            <div class="values-grid">
+                <div class="value-item">
+                    <span class="icon">💎</span>
+                    <h4>Integrity</h4>
+                    <p>Honest, transparent, and always keep our promises.</p>
+                </div>
+                <div class="value-item">
+                    <span class="icon">⭐</span>
+                    <h4>Quality</h4>
+                    <p>Never compromise — genuine parts and expert service.</p>
+                </div>
+                <div class="value-item">
+                    <span class="icon">🤝</span>
+                    <h4>Customer First</h4>
+                    <p>You're at the heart of everything we do.</p>
+                </div>
+                <div class="value-item">
+                    <span class="icon">🚀</span>
+                    <h4>Innovation</h4>
+                    <p>Embrace technology and continuously improve.</p>
+                </div>
+                <div class="value-item">
+                    <span class="icon">🌍</span>
+                    <h4>Community</h4>
+                    <p>Building a tech community that supports each other.</p>
+                </div>
+                <div class="value-item">
+                    <span class="icon">🛡️</span>
+                    <h4>Trust</h4>
+                    <p>We stand behind every product we sell.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- CEO SECTION -->
+    <section class="about-section">
+        <div class="container">
+            <h2 class="text-center" style="margin-bottom: 0.5rem;">
+                Meet the <span class="text-gold">CEO</span>
+            </h2>
+            <p class="text-center text-muted" style="font-size: 1.05rem; max-width: 600px; margin: 0 auto 2rem;">
+                Behind every great business is a visionary leader
+            </p>
+            
+            <div class="ceo-section">
+                <div class="ceo-avatar">MM</div>
+                <div class="ceo-info">
+                    <h3>Mudasiru Mukthar</h3>
+                    <div class="role">👑 Founder & Chief Executive Officer</div>
+                    <p class="bio">
+                        A passionate technologist with a clear vision — to make quality technology 
+                        accessible to every Nigerian. With deep experience in the tech industry, 
+                        Mudasiru founded Genera Tech Hub to create a trusted space where customers 
+                        can buy, repair, and trade devices with confidence.
+                    </p>
+                    <p class="bio" style="margin-top: 1rem; font-style: italic; color: var(--gold);">
+                        "Technology You Can Trust — that's not just a tagline, it's our promise to every customer."
+                    </p>
+                    <div class="contact-row">
+                        <a href="https://wa.me/2348081302228" target="_blank" class="btn btn-whatsapp">
+                            <i class="fab fa-whatsapp"></i> WhatsApp
+                        </a>
+                        <a href="mailto:info@generatechhub.com" class="btn btn-secondary">
+                            <i class="fas fa-envelope"></i> Email
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- TIMELINE -->
+    <section class="about-section">
+        <div class="container">
+            <h2 class="text-center" style="margin-bottom: 0.5rem;">
+                Our <span class="text-gold">Journey</span>
+            </h2>
+            <p class="text-center text-muted" style="font-size: 1.05rem; max-width: 600px; margin: 0 auto 2rem;">
+                The story of Genera Tech Hub
+            </p>
+            
+            <div class="timeline">
+                <div class="timeline-item">
+                    <span class="year">2026</span>
+                    <div class="event">🏠 Founded Genera Tech Hub with a vision to build trust in technology</div>
+                </div>
+                <div class="timeline-item">
+                    <span class="year">2026</span>
+                    <div class="event">🔧 Launched full repair services for phones, laptops, and tablets</div>
+                </div>
+                <div class="timeline-item">
+                    <span class="year">2026</span>
+                    <div class="event">📱 Started selling quality new and refurbished devices</div>
+                </div>
+                <div class="timeline-item">
+                    <span class="year">2026</span>
+                    <div class="event">🔄 Introduced trade-in and swap program for customers</div>
+                </div>
+                <div class="timeline-item">
+                    <span class="year">2026</span>
+                    <div class="event">🚀 Launched our online presence with a modern website and AI assistant</div>
+                </div>
+                <div class="timeline-item">
+                    <span class="year">Coming Soon</span>
+                    <div class="event">🏆 Expanding to serve more cities across Nigeria</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- STATS -->
+    <section class="about-section">
+        <div class="container">
+            <h2 class="text-center" style="margin-bottom: 0.5rem;">
+                Genera Tech Hub <span class="text-gold">By The Numbers</span>
+            </h2>
+            <p class="text-center text-muted" style="font-size: 1.05rem; max-width: 600px; margin: 0 auto 1rem;">
+                Our growing impact
+            </p>
+            
+            <div class="stats-grid-about">
+                <div class="stat-item">
+                    <div class="number counter" data-target="500">0+</div>
+                    <div class="label">Devices Repaired</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number counter" data-target="1000">0+</div>
+                    <div class="label">Happy Customers</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number counter" data-target="50">0+</div>
+                    <div class="label">Brands Supported</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number">4.9</div>
+                    <div class="label">⭐ Customer Rating</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- CTA -->
+    <section class="about-section">
+        <div class="container">
+            <div class="about-cta">
+                <h2>Ready to Experience <span class="text-gold">Genera Tech Hub</span>?</h2>
+                <p>
+                    Whether you need to buy, sell, repair, or trade — we're here for you. 
+                    <em>Technology You Can Trust.</em>
+                </p>
+                <div class="buttons">
+                    <a href="/src/pages/product.html" class="btn btn-primary">
+                        <i class="fas fa-shopping-bag"></i> Shop Now
+                    </a>
+                    <a href="/src/pages/repair.html" class="btn btn-secondary">
+                        <i class="fas fa-tools"></i> Book Repair
+                    </a>
+                    <a href="https://wa.me/2348081302228" target="_blank" class="btn btn-whatsapp">
+                        <i class="fab fa-whatsapp"></i> Chat with Us
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <div id="footer-placeholder"></div>
+    
+    <script>
+        // Load header/footer
+        fetch('../components/header.html').then(r => r.text()).then(d => {
+            document.getElementById('header-placeholder').innerHTML = d;
+        }).catch(() => {});
+        
+        fetch('../components/footer.html').then(r => r.text()).then(d => {
+            document.getElementById('footer-placeholder').innerHTML = d;
+        }).catch(() => {});
+        
+        // Load scripts
+        function loadScript(src) {
+            return new Promise((resolve, reject) => {
+                if (document.querySelector(`script[src="${src}"]`)) return resolve();
+                const s = document.createElement('script');
+                s.src = src;
+                s.async = false;
+                s.onload = resolve;
+                s.onerror = () => reject(new Error(`Could not load ${src}`));
+                document.head.appendChild(s);
+            });
+        }
+        
+        (async function init() {
+            try {
+                await loadScript('../../public/js/supabase.js');
+                await loadScript('../../public/js/main.js');
+                console.log('✅ About page scripts loaded');
+            } catch (err) {
+                console.warn('Script load warning:', err);
+            }
+        })();
+    </script>
+</body>
+</html>

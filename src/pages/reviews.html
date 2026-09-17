@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Customer Reviews - Genera Tech Hub | Technology You Can Trust</title>
+    <meta name="description" content="Read real customer reviews for Genera Tech Hub. See why hundreds trust us for devices, repairs, and trade-ins.">
+    <meta name="theme-color" content="#0A1628">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👑</text></svg>">
+    <!-- 👇 ADD THIS LINE RIGHT HERE 👇 -->
+    <link rel="icon" type="image/x-icon" href="/public/images/favicon.ico">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="../../public/css/style.css">
+    
+    <style>
+        .reviews-header {
+            padding-top: 120px;
+            padding-bottom: 2rem;
+            background: var(--gradient-navy);
+            border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+        }
+        
+        .reviews-header h1 { font-size: clamp(2rem, 4vw, 3rem); }
+        
+        .reviews-layout {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 3rem;
+            padding: 3rem 0 4rem;
+        }
+        
+        /* Rating Summary */
+        .rating-summary {
+            background: rgba(26, 45, 74, 0.4);
+            border-radius: var(--radius-md);
+            padding: 2rem;
+            border: 1px solid rgba(255, 215, 0, 0.05);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .rating-summary .big-rating {
+            font-size: 4rem;
+            font-weight: 700;
+            color: var(--gold);
+            font-family: var(--font-heading);
+            line-height: 1;
+        }
+        
+        .rating-summary .big-stars {
+            font-size: 1.8rem;
+            color: var(--gold);
+            letter-spacing: 4px;
+            margin: 0.5rem 0;
+        }
+        
+        .rating-summary .total-reviews {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+        
+        .rating-bars {
+            margin-top: 1.5rem;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .rating-bar-row {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.4rem;
+        }
+        
+        .rating-bar-row .stars {
+            font-size: 0.85rem;
+            color: var(--gold);
+            width: 60px;
+            text-align: right;
+        }
+        
+        .rating-bar-row .bar-track {
+            flex: 1;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .rating-bar-row .bar-fill {
+            height: 100%;
+            background: var(--gradient-gold);
+            border-radius: 3px;
+            transition: width 1s ease;
+        }
+        
+        .rating-bar-row .count {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            width: 30px;
+            text-align: left;
+        }
+        
+        /* Reviews List */
+        .review-card {
+            background: rgba(26, 45, 74, 0.4);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 215, 0, 0.05);
+            margin-bottom: 1.25rem;
+            transition: var(--transition-fast);
+        }
+        
+        .review-card:hover {
+            border-color: rgba(255, 215, 0, 0.15);
+        }
+        
+        .review-card .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+            flex-wrap: wrap;
+        }
+        
+        .review-card .reviewer-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .review-card .avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: var(--gradient-gold);
+            color: var(--navy-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+        
+        .review-card .name {
+            font-weight: 600;
+            color: var(--text-light);
+            font-size: 0.95rem;
+        }
+        
+        .review-card .device {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            display: block;
+            margin-top: 0.15rem;
+        }
+        
+        .review-card .rating {
+            color: var(--gold);
+            font-size: 1rem;
+            letter-spacing: 1px;
+        }
+        
+        .review-card .review-text {
+            color: var(--text-light);
+            line-height: 1.7;
+            font-size: 0.95rem;
+            margin: 0.5rem 0 0.75rem;
+        }
+        
+        .review-card .review-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 0.75rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        
+        /* Submit Review Form */
+        .submit-review-section {
+            background: rgba(26, 45, 74, 0.4);
+            border-radius: var(--radius-md);
+            padding: 2rem;
+            border: 1px solid rgba(255, 215, 0, 0.05);
+        }
+        
+        .submit-review-section h3 {
+            margin-bottom: 0.3rem;
+        }
+        
+        .submit-review-section .subtitle {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.4rem;
+            color: var(--text-light);
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.8rem 1.2rem;
+            border-radius: var(--radius-sm);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--white);
+            font-size: 1rem;
+            font-family: inherit;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--gold);
+        }
+        
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        /* Star Selector */
+        .star-selector {
+            display: flex;
+            gap: 0.4rem;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+            margin-bottom: 0.5rem;
+        }
+        
+        .star-selector input { display: none; }
+        
+        .star-selector label {
+            font-size: 2rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+        
+        .star-selector label:hover,
+        .star-selector label:hover ~ label,
+        .star-selector input:checked ~ label {
+            color: var(--gold);
+        }
+        
+        /* Sidebar */
+        .reviews-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .sidebar-card {
+            background: rgba(26, 45, 74, 0.4);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 215, 0, 0.05);
+        }
+        
+        .sidebar-card h4 {
+            color: var(--gold);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1rem;
+        }
+        
+        .sidebar-card ul { list-style: none; padding: 0; }
+        
+        .sidebar-card ul li {
+            color: var(--text-light);
+            padding: 0.4rem 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        .sidebar-card ul li::before {
+            content: '✅';
+            flex-shrink: 0;
+        }
+        
+        /* Success */
+        .success-message {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .success-message .icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        
+        .success-message h3 {
+            color: #00E676;
+            margin-bottom: 0.5rem;
+        }
+        
+        .success-message p {
+            color: var(--text-muted);
+        }
+        
+        /* Loading */
+        .loading-container {
+            text-align: center;
+            padding: 3rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .reviews-layout {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            .reviews-sidebar {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 1.5rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .rating-summary { padding: 1.5rem; }
+            .rating-summary .big-rating { font-size: 3rem; }
+            .review-card { padding: 1.25rem; }
+            .review-card .review-header { flex-direction: column; }
+            .reviews-sidebar { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body id="main-content">
+    <div id="header-placeholder"></div>
+    
+    <section class="reviews-header">
+        <div class="container">
+            <h1>⭐ Customer <span class="text-gold">Reviews</span></h1>
+            <p style="color: var(--text-muted); font-size: 1.05rem; max-width: 700px;">
+                See what real customers say about their experience with Genera Tech Hub. 
+                Your feedback helps us improve.
+            </p>
+        </div>
+    </section>
+    
+    <section class="reviews-layout container">
+        <!-- MAIN CONTENT -->
+        <div>
+            <!-- Rating Summary -->
+            <div class="rating-summary">
+                <div class="big-rating" id="avgRating">0.0</div>
+                <div class="big-stars" id="avgStars">☆☆☆☆☆</div>
+                <div class="total-reviews" id="totalReviews">No reviews yet</div>
+                <div class="rating-bars" id="ratingBars"></div>
+            </div>
+            
+            <!-- Reviews List -->
+            <div id="reviewsContainer">
+                <div class="loading-container">
+                    <div class="loading"></div>
+                    <p style="color: var(--text-muted); margin-top: 1rem;">Loading reviews...</p>
+                </div>
+            </div>
+            
+            <!-- Load More -->
+            <div class="text-center" style="margin-top: 1.5rem;">
+                <button id="loadMoreBtn" class="btn btn-secondary" style="display: none;">
+                    <i class="fas fa-arrow-down"></i> Load More Reviews
+                </button>
+            </div>
+            
+            <!-- Submit Review -->
+            <div class="submit-review-section" style="margin-top: 2.5rem;">
+                <h3>📝 Write a Review</h3>
+                <p class="subtitle">Share your experience and help others make informed decisions.</p>
+                
+                <form id="reviewForm" novalidate>
+                    <div id="reviewFormContent">
+                        <div class="form-group">
+                            <label>Your Rating</label>
+                            <div class="star-selector">
+                                <input type="radio" name="rating" id="star5" value="5" checked>
+                                <label for="star5" title="5 stars">⭐</label>
+                                <input type="radio" name="rating" id="star4" value="4">
+                                <label for="star4" title="4 stars">⭐</label>
+                                <input type="radio" name="rating" id="star3" value="3">
+                                <label for="star3" title="3 stars">⭐</label>
+                                <input type="radio" name="rating" id="star2" value="2">
+                                <label for="star2" title="2 stars">⭐</label>
+                                <input type="radio" name="rating" id="star1" value="1">
+                                <label for="star1" title="1 star">⭐</label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="reviewText">Your Review *</label>
+                            <textarea id="reviewText" name="reviewText" class="form-control" 
+                                      placeholder="Tell us about your experience..." required></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="reviewDevice">Device/Service</label>
+                            <input type="text" id="reviewDevice" name="deviceService" class="form-control" 
+                                   placeholder="e.g., iPhone 14 Pro Screen Repair">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="reviewName">Your Name (Optional)</label>
+                            <input type="text" id="reviewName" name="customerName" class="form-control" 
+                                   placeholder="John Doe">
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 0.9rem;">
+                            <i class="fas fa-paper-plane"></i> Submit Review
+                        </button>
+                        
+                        <p style="text-align: center; color: var(--text-muted); font-size: 0.8rem; margin-top: 0.75rem;">
+                            <i class="fas fa-lock"></i> Your review will be reviewed before publishing
+                        </p>
+                    </div>
+                    
+                    <div class="success-message" id="reviewSuccess">
+                        <div class="icon">✅</div>
+                        <h3>Thank You!</h3>
+                        <p>Your review has been submitted and will be published after review.</p>
+                        <button type="button" class="btn btn-primary" onclick="resetReviewForm()" style="margin-top: 1rem;">
+                            <i class="fas fa-redo"></i> Write Another
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- SIDEBAR -->
+        <div class="reviews-sidebar">
+            <div class="sidebar-card">
+                <h4>💡 Why Reviews Matter</h4>
+                <ul>
+                    <li>Help others make informed decisions</li>
+                    <li>Help us improve our services</li>
+                    <li>Build trust in our community</li>
+                    <li>Your voice matters!</li>
+                </ul>
+            </div>
+            
+            <div class="sidebar-card" style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(244, 196, 48, 0.05)); border-color: rgba(255, 215, 0, 0.25);">
+                <h4>👑 Our Promise</h4>
+                <p style="color: var(--text-light); font-size: 0.9rem; line-height: 1.7;">
+                    <strong style="color: var(--gold);">Technology You Can Trust.</strong><br>
+                    Every review helps us serve you better.
+                </p>
+            </div>
+            
+            <div class="sidebar-card" style="background: rgba(37, 211, 102, 0.08); border-color: rgba(37, 211, 102, 0.2);">
+                <h4 style="color: #25D366;">💬 Chat with Us</h4>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">
+                    Have feedback to share directly?
+                </p>
+                <a href="https://wa.me/2348081302228" target="_blank" class="btn btn-whatsapp" style="width: 100%; justify-content: center;">
+                    <i class="fab fa-whatsapp"></i> WhatsApp
+                </a>
+            </div>
+        </div>
+    </section>
+    
+    <div id="footer-placeholder"></div>
+    
+    <script>
+        // Load header/footer
+        fetch('../components/header.html').then(r => r.text()).then(d => {
+            document.getElementById('header-placeholder').innerHTML = d;
+        }).catch(() => {});
+        fetch('../components/footer.html').then(r => r.text()).then(d => {
+            document.getElementById('footer-placeholder').innerHTML = d;
+        }).catch(() => {});
+        
+        // Load scripts
+        function loadScript(src) {
+            return new Promise((resolve, reject) => {
+                if (document.querySelector(`script[src="${src}"]`)) return resolve();
+                const s = document.createElement('script');
+                s.src = src;
+                s.async = false;
+                s.onload = resolve;
+                s.onerror = () => reject(new Error(`Could not load ${src}`));
+                document.head.appendChild(s);
+            });
+        }
+        
+        let allReviews = [];
+        let displayedReviews = 0;
+        const reviewsPerPage = 5;
+        let isSubmitting = false;
+        
+        (async function init() {
+            try {
+                await loadScript('../../public/js/supabase.js');
+                await loadScript('../../public/js/main.js');
+                console.log('✅ Reviews page scripts loaded');
+                await loadReviews();
+                setupReviewForm();
+            } catch (err) {
+                console.error('❌ Load error:', err);
+            }
+        })();
+        
+        // ============================================
+        // LOAD REVIEWS
+        // ============================================
+        
+        async function loadReviews() {
+            try {
+                if (typeof getApprovedReviews === 'undefined') {
+                    showNoReviews();
+                    return;
+                }
+                
+                const result = await getApprovedReviews(50);
+                
+                if (result.success && result.reviews && result.reviews.length > 0) {
+                    allReviews = result.reviews;
+                    displayedReviews = 0;
+                    renderReviews();
+                    updateRatingSummary();
+                } else {
+                    showNoReviews();
+                }
+            } catch (error) {
+                console.error('❌ Load reviews error:', error);
+                showNoReviews();
+            }
+        }
+        
+        function showNoReviews() {
+            document.getElementById('reviewsContainer').innerHTML = `
+                <div style="text-align: center; padding: 3rem;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">📝</div>
+                    <h3 style="color: var(--text-light); margin-bottom: 0.5rem;">No Reviews Yet</h3>
+                    <p style="color: var(--text-muted);">Be the first to leave a review!</p>
+                </div>
+            `;
+            document.getElementById('avgRating').textContent = '0.0';
+            document.getElementById('avgStars').textContent = '☆☆☆☆☆';
+            document.getElementById('totalReviews').textContent = 'No reviews yet';
+        }
+        
+        function renderReviews() {
+            const container = document.getElementById('reviewsContainer');
+            const loadMoreBtn = document.getElementById('loadMoreBtn');
+            
+            const end = Math.min(displayedReviews + reviewsPerPage, allReviews.length);
+            const toShow = allReviews.slice(0, end);
+            
+            container.innerHTML = toShow.map(r => buildReviewCard(r)).join('');
+            displayedReviews = end;
+            
+            if (displayedReviews < allReviews.length) {
+                loadMoreBtn.style.display = 'inline-flex';
+                loadMoreBtn.onclick = () => {
+                    renderReviews();
+                };
+            } else {
+                loadMoreBtn.style.display = 'none';
+            }
+        }
+        
+        function buildReviewCard(review) {
+            const stars = '⭐'.repeat(Math.min(review.rating || 5, 5));
+            const name = review.customer_name || 'Anonymous';
+            const initial = name.charAt(0).toUpperCase();
+            const device = review.device_service || 'Genera Tech Hub Customer';
+            const date = review.created_at ? new Date(review.created_at).toLocaleDateString('en-NG', {
+                year: 'numeric', month: 'long', day: 'numeric'
+            }) : 'Recently';
+            
+            return `
+                <div class="review-card fade-in">
+                    <div class="review-header">
+                        <div class="reviewer-info">
+                            <div class="avatar">${initial}</div>
+                            <div>
+                                <div class="name">${name}</div>
+                                <span class="device">📱 ${device}</span>
+                            </div>
+                        </div>
+                        <div class="rating">${stars}</div>
+                    </div>
+                    <p class="review-text">${review.review_text}</p>
+                    <div class="review-footer">
+                        <span>📅 ${date}</span>
+                        <span>✅ Verified Customer</span>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function updateRatingSummary() {
+            if (allReviews.length === 0) return;
+            
+            const total = allReviews.reduce((sum, r) => sum + (r.rating || 5), 0);
+            const avg = total / allReviews.length;
+            
+            document.getElementById('avgRating').textContent = avg.toFixed(1);
+            document.getElementById('avgStars').textContent = '⭐'.repeat(Math.round(avg));
+            document.getElementById('totalReviews').textContent = `Based on ${allReviews.length} review${allReviews.length > 1 ? 's' : ''}`;
+            
+            // Distribution
+            const dist = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+            allReviews.forEach(r => {
+                const rating = Math.round(r.rating || 5);
+                if (dist[rating] !== undefined) dist[rating]++;
+            });
+            
+            let barsHtml = '';
+            for (let i = 5; i >= 1; i--) {
+                const count = dist[i];
+                const percent = allReviews.length > 0 ? (count / allReviews.length * 100) : 0;
+                barsHtml += `
+                    <div class="rating-bar-row">
+                        <span class="stars">${i}⭐</span>
+                        <div class="bar-track">
+                            <div class="bar-fill" style="width: ${percent}%;"></div>
+                        </div>
+                        <span class="count">${count}</span>
+                    </div>
+                `;
+            }
+            document.getElementById('ratingBars').innerHTML = barsHtml;
+        }
+        
+        // ============================================
+        // SUBMIT REVIEW
+        // ============================================
+        
+        function setupReviewForm() {
+            const form = document.getElementById('reviewForm');
+            
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                if (isSubmitting) return;
+                
+                const rating = parseInt(document.querySelector('input[name="rating"]:checked')?.value || 5);
+                const reviewText = document.getElementById('reviewText').value.trim();
+                const deviceService = document.getElementById('reviewDevice').value.trim();
+                const customerName = document.getElementById('reviewName').value.trim();
+                
+                if (!reviewText || reviewText.length < 10) {
+                    if (typeof showToast !== 'undefined') {
+                        showToast('⚠️ Please write a review (minimum 10 characters).', 'error');
+                    }
+                    return;
+                }
+                
+                isSubmitting = true;
+                const btn = form.querySelector('button[type="submit"]');
+                const orig = btn.innerHTML;
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+                
+                try {
+                    if (typeof submitReview !== 'undefined') {
+                        await submitReview({
+                            rating,
+                            reviewText,
+                            deviceService: deviceService || null,
+                            customerName: customerName || 'Anonymous'
+                        });
+                    }
+                    
+                    // WhatsApp message
+                    const message = `⭐ *NEW REVIEW*\n*GENERA TECH HUB*\n\n${'⭐'.repeat(rating)} (${rating}/5)\n\n💬 "${reviewText}"\n\n📱 ${deviceService || 'N/A'}\n👤 ${customerName || 'Anonymous'}\n\n_Technology You Can Trust_ 👑`;
+                    
+                    if (typeof openWhatsApp !== 'undefined') openWhatsApp(message);
+                    else window.open(`https://wa.me/2348081302228?text=${encodeURIComponent(message)}`, '_blank');
+                    
+                    document.getElementById('reviewFormContent').style.display = 'none';
+                    document.getElementById('reviewSuccess').style.display = 'block';
+                    
+                    if (typeof showToast !== 'undefined') {
+                        showToast('✅ Thank you for your review!', 'success');
+                    }
+                } catch (error) {
+                    console.error('❌ Review error:', error);
+                    if (typeof showToast !== 'undefined') showToast('❌ Something went wrong.', 'error');
+                } finally {
+                    isSubmitting = false;
+                    btn.disabled = false;
+                    btn.innerHTML = orig;
+                }
+            });
+        }
+        
+        function resetReviewForm() {
+            document.getElementById('reviewFormContent').style.display = 'block';
+            document.getElementById('reviewSuccess').style.display = 'none';
+            document.getElementById('reviewForm').reset();
+        }
+        
+        window.resetReviewForm = resetReviewForm;
+    </script>
+</body>
+</html>

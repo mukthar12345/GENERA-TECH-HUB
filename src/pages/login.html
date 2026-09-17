@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Login / Sign Up - Genera Tech Hub</title>
+    <meta name="description" content="Login or create your Genera Tech Hub account. Manage orders, track repairs, and more.">
+    <meta name="theme-color" content="#0A1628">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👑</text></svg>">
+     <!-- 👇 ADD THIS LINE RIGHT HERE 👇 -->
+    <link rel="icon" type="image/x-icon" href="/public/images/favicon.ico">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="../../public/css/style.css">
+    
+    <style>
+        .auth-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 120px 1rem 4rem;
+            background: var(--gradient-hero);
+            position: relative;
+        }
+        
+        .auth-page::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(255, 215, 0, 0.05) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        
+        .auth-container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 480px;
+            background: rgba(26, 45, 74, 0.7);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem;
+            border: 1px solid rgba(255, 215, 0, 0.1);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+        
+        .auth-logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .auth-logo .icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--gradient-gold);
+            font-size: 1.8rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .auth-logo h1 {
+            font-family: var(--font-heading);
+            font-size: 1.6rem;
+            color: var(--gold);
+        }
+        
+        .auth-logo h1 span { color: var(--white); }
+        
+        .auth-logo p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 0.4rem;
+            font-style: italic;
+        }
+        
+        /* Tabs */
+        .auth-tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 2rem;
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            border: 1px solid rgba(255, 215, 0, 0.1);
+        }
+        
+        .auth-tab {
+            flex: 1;
+            padding: 0.9rem;
+            text-align: center;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            position: relative;
+            font-family: inherit;
+        }
+        
+        .auth-tab:hover { color: var(--text-light); }
+        .auth-tab.active {
+            color: var(--gold);
+            background: rgba(255, 215, 0, 0.05);
+        }
+        
+        .auth-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--gold);
+        }
+        
+        /* Forms */
+        .auth-form { display: none; }
+        .auth-form.active { display: block; }
+        
+        .auth-form h2 {
+            font-size: 1.3rem;
+            margin-bottom: 0.3rem;
+        }
+        
+        .auth-form .subtitle {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.4rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-light);
+        }
+        
+        .form-group label .required { color: var(--gold); }
+        
+        .input-wrapper {
+            position: relative;
+        }
+        
+        .input-wrapper .form-control {
+            padding-right: 3rem;
+        }
+        
+        .toggle-password {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: var(--transition-fast);
+        }
+        
+        .toggle-password:hover { color: var(--gold); }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.85rem 1.2rem;
+            border-radius: var(--radius-sm);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--white);
+            font-size: 1rem;
+            font-family: inherit;
+            transition: var(--transition-fast);
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--gold);
+            background: rgba(255, 255, 255, 0.08);
+        }
+        
+        .form-control::placeholder { color: var(--text-muted); }
+        
+        /* Auth Options */
+        .auth-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 1rem 0 1.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .auth-options label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+        
+        .auth-options input[type="checkbox"] {
+            accent-color: var(--gold);
+            width: 16px;
+            height: 16px;
+        }
+        
+        .auth-options .forgot-link {
+            color: var(--gold);
+            text-decoration: none;
+        }
+        
+        .auth-options .forgot-link:hover {
+            text-decoration: underline;
+        }
+        
+        /* Submit */
+        .btn-submit {
+            width: 100%;
+            padding: 0.95rem;
+            font-size: 1rem;
+            font-weight: 600;
+            justify-content: center;
+        }
+        
+        /* Alert */
+        .alert {
+            padding: 0.9rem 1rem;
+            border-radius: var(--radius-sm);
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            display: none;
+            line-height: 1.5;
+        }
+        
+        .alert.show { display: block; }
+        
+        .alert-error {
+            background: rgba(255, 23, 68, 0.1);
+            border: 1px solid rgba(255, 23, 68, 0.3);
+            color: #FF6B7A;
+        }
+        
+        .alert-success {
+            background: rgba(0, 230, 118, 0.1);
+            border: 1px solid rgba(0, 230, 118, 0.3);
+            color: #4DFFA7;
+        }
+        
+        .alert-info {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            color: var(--gold);
+        }
+        
+        /* Terms */
+        .terms-check {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.6rem;
+            margin-bottom: 1.5rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+        
+        .terms-check input {
+            margin-top: 0.2rem;
+            accent-color: var(--gold);
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+        }
+        
+        .terms-check a {
+            color: var(--gold);
+            text-decoration: none;
+        }
+        
+        /* Trust */
+        .trust-footer {
+            text-align: center;
+            padding-top: 1.5rem;
+            margin-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        
+        .trust-footer .tagline {
+            color: var(--gold);
+            font-family: var(--font-heading);
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 480px) {
+            .auth-container { padding: 1.75rem; }
+            .auth-logo h1 { font-size: 1.3rem; }
+            .auth-options { flex-direction: column; gap: 0.5rem; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body id="main-content">
+    <div id="header-placeholder"></div>
+    
+    <section class="auth-page">
+        <div class="auth-container">
+            <!-- Logo -->
+            <div class="auth-logo">
+                <span class="icon">🔧</span>
+                <h1>Genera<span>Tech</span> Hub</h1>
+                <p>Technology You Can Trust</p>
+            </div>
+            
+            <!-- Tabs -->
+            <div class="auth-tabs">
+                <button class="auth-tab active" id="loginTab">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+                <button class="auth-tab" id="signupTab">
+                    <i class="fas fa-user-plus"></i> Sign Up
+                </button>
+            </div>
+            
+            <!-- LOGIN FORM -->
+            <div class="auth-form active" id="loginForm">
+                <h2>Welcome Back 👋</h2>
+                <p class="subtitle">Login to your Genera Tech Hub account</p>
+                
+                <div class="alert" id="loginAlert"></div>
+                
+                <form id="loginFormElement" novalidate>
+                    <div class="form-group">
+                        <label for="loginEmail">Email Address <span class="required">*</span></label>
+                        <input type="email" id="loginEmail" class="form-control" 
+                               placeholder="you@email.com" required autocomplete="email">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="loginPassword">Password <span class="required">*</span></label>
+                        <div class="input-wrapper">
+                            <input type="password" id="loginPassword" class="form-control" 
+                                   placeholder="Enter your password" required autocomplete="current-password">
+                            <button type="button" class="toggle-password" aria-label="Toggle password">👁️</button>
+                        </div>
+                    </div>
+                    
+                    <div class="auth-options">
+                        <label>
+                            <input type="checkbox" id="rememberMe"> Remember me
+                        </label>
+                        <a href="#" class="forgot-link" id="forgotPassword">Forgot password?</a>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-submit">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </button>
+                </form>
+                
+                <p style="text-align: center; color: var(--text-muted); font-size: 0.9rem; margin-top: 1.5rem;">
+                    Don't have an account? <a href="#" onclick="switchAuthTab('signup'); return false;" style="color: var(--gold);">Sign up here</a>
+                </p>
+            </div>
+            
+            <!-- SIGNUP FORM -->
+            <div class="auth-form" id="signupForm">
+                <h2>Create Account 🚀</h2>
+                <p class="subtitle">Join Genera Tech Hub and enjoy exclusive benefits</p>
+                
+                <div class="alert" id="signupAlert"></div>
+                
+                <form id="signupFormElement" novalidate>
+                    <div class="form-group">
+                        <label for="signupName">Full Name <span class="required">*</span></label>
+                        <input type="text" id="signupName" class="form-control" 
+                               placeholder="John Doe" required autocomplete="name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="signupEmail">Email Address <span class="required">*</span></label>
+                        <input type="email" id="signupEmail" class="form-control" 
+                               placeholder="you@email.com" required autocomplete="email">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="signupPhone">Phone Number <span class="required">*</span></label>
+                        <input type="tel" id="signupPhone" class="form-control" 
+                               placeholder="08012345678" required autocomplete="tel">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="signupPassword">Password <span class="required">*</span></label>
+                        <div class="input-wrapper">
+                            <input type="password" id="signupPassword" class="form-control" 
+                                   placeholder="Min 6 characters" required minlength="6" autocomplete="new-password">
+                            <button type="button" class="toggle-password" aria-label="Toggle password">👁️</button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="signupConfirmPassword">Confirm Password <span class="required">*</span></label>
+                        <div class="input-wrapper">
+                            <input type="password" id="signupConfirmPassword" class="form-control" 
+                                   placeholder="Confirm your password" required autocomplete="new-password">
+                            <button type="button" class="toggle-password" aria-label="Toggle password">👁️</button>
+                        </div>
+                    </div>
+                    
+                    <label class="terms-check">
+                        <input type="checkbox" id="termsCheck">
+                        <span>I agree to the <a href="/src/pages/terms.html" target="_blank">Terms</a> and <a href="/src/pages/privacy.html" target="_blank">Privacy Policy</a></span>
+                    </label>
+                    
+                    <button type="submit" class="btn btn-primary btn-submit">
+                        <i class="fas fa-user-plus"></i> Create Account
+                    </button>
+                </form>
+                
+                <p style="text-align: center; color: var(--text-muted); font-size: 0.9rem; margin-top: 1.5rem;">
+                    Already have an account? <a href="#" onclick="switchAuthTab('login'); return false;" style="color: var(--gold);">Login here</a>
+                </p>
+            </div>
+            
+            <!-- Trust Footer -->
+            <div class="trust-footer">
+                <div class="tagline">👑 Genera Tech Hub</div>
+                <div style="margin-top: 0.3rem;">Technology You Can Trust</div>
+            </div>
+        </div>
+    </section>
+    
+    <div id="footer-placeholder"></div>
+    
+    <script>
+        // ============================================
+        // LOAD HEADER & FOOTER
+        // ============================================
+        
+        fetch('../components/header.html').then(r => r.text()).then(d => {
+            document.getElementById('header-placeholder').innerHTML = d;
+        }).catch(() => {});
+        fetch('../components/footer.html').then(r => r.text()).then(d => {
+            document.getElementById('footer-placeholder').innerHTML = d;
+        }).catch(() => {});
+        
+        // ============================================
+        // LOAD SCRIPTS
+        // ============================================
+        
+        function loadScript(src) {
+            return new Promise((resolve, reject) => {
+                if (document.querySelector(`script[src="${src}"]`)) return resolve();
+                const s = document.createElement('script');
+                s.src = src;
+                s.async = false;
+                s.onload = resolve;
+                s.onerror = () => reject(new Error(`Could not load ${src}`));
+                document.head.appendChild(s);
+            });
+        }
+        
+        (async function init() {
+            try {
+                await loadScript('../../public/js/supabase.js');
+                await loadScript('../../public/js/main.js');
+                console.log('✅ Login page scripts loaded');
+                initAuthPage();
+            } catch (err) {
+                console.error('❌ Load error:', err);
+            }
+        })();
+        
+        // ============================================
+        // AUTH PAGE LOGIC
+        // ============================================
+        
+        function initAuthPage() {
+            // Tab switching
+            document.getElementById('loginTab').addEventListener('click', () => switchAuthTab('login'));
+            document.getElementById('signupTab').addEventListener('click', () => switchAuthTab('signup'));
+            
+            // Password toggles
+            document.querySelectorAll('.toggle-password').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const input = this.parentElement.querySelector('input');
+                    if (input) {
+                        const type = input.type === 'password' ? 'text' : 'password';
+                        input.type = type;
+                        this.textContent = type === 'password' ? '👁️' : '👁️‍🗨️';
+                    }
+                });
+            });
+            
+            // Login form
+            document.getElementById('loginFormElement').addEventListener('submit', handleLogin);
+            
+            // Signup form
+            document.getElementById('signupFormElement').addEventListener('submit', handleSignup);
+            
+            // Forgot password
+            document.getElementById('forgotPassword').addEventListener('click', handleForgotPassword);
+            
+            // Check URL hash
+            if (window.location.hash === '#signup') switchAuthTab('signup');
+            
+            // Check if already logged in
+            setTimeout(checkAuthAndRedirect, 1500);
+        }
+        
+        function switchAuthTab(tab) {
+            const loginTab = document.getElementById('loginTab');
+            const signupTab = document.getElementById('signupTab');
+            const loginForm = document.getElementById('loginForm');
+            const signupForm = document.getElementById('signupForm');
+            
+            if (tab === 'login') {
+                loginTab.classList.add('active');
+                signupTab.classList.remove('active');
+                loginForm.classList.add('active');
+                signupForm.classList.remove('active');
+                window.location.hash = '';
+            } else {
+                signupTab.classList.add('active');
+                loginTab.classList.remove('active');
+                signupForm.classList.add('active');
+                loginForm.classList.remove('active');
+                window.location.hash = 'signup';
+            }
+            
+            clearAlerts();
+        }
+        
+        window.switchAuthTab = switchAuthTab;
+        
+        // ============================================
+        // LOGIN
+        // ============================================
+        
+        async function handleLogin(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+            const password = document.getElementById('loginPassword').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
+            const alert = document.getElementById('loginAlert');
+            
+            if (!email || !password) {
+                showAlert(alert, '⚠️ Please fill in all fields.', 'error');
+                return;
+            }
+            
+            if (!isValidEmail(email)) {
+                showAlert(alert, '⚠️ Please enter a valid email.', 'error');
+                return;
+            }
+            
+            const btn = e.target.querySelector('button[type="submit"]');
+            const orig = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
+            clearAlerts();
+            
+            try {
+                if (typeof signInUser === 'undefined') {
+                    throw new Error('Authentication not loaded. Refresh page.');
+                }
+                
+                const result = await signInUser(email, password);
+                
+                if (result.success) {
+                    showAlert(alert, '✅ Login successful! Redirecting...', 'success');
+                    
+                    if (rememberMe) localStorage.setItem('rememberMe', 'true');
+                    else localStorage.removeItem('rememberMe');
+                    
+                    setTimeout(() => {
+                        // Check if CEO
+                        if (email === 'mudasirumukthar@gmail.com') {
+                            window.location.href = '/src/pages/admin/index.html';
+                        } else {
+                            window.location.href = '/src/pages/index.html';
+                        }
+                    }, 1000);
+                } else {
+                    showAlert(alert, '❌ ' + (result.error || 'Login failed'), 'error');
+                    btn.disabled = false;
+                    btn.innerHTML = orig;
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showAlert(alert, '❌ ' + error.message, 'error');
+                btn.disabled = false;
+                btn.innerHTML = orig;
+            }
+        }
+        
+        // ============================================
+        // SIGNUP
+        // ============================================
+        
+        async function handleSignup(e) {
+            e.preventDefault();
+            
+            const fullName = document.getElementById('signupName').value.trim();
+            const email = document.getElementById('signupEmail').value.trim().toLowerCase();
+            const phone = document.getElementById('signupPhone').value.trim();
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('signupConfirmPassword').value;
+            const termsChecked = document.getElementById('termsCheck').checked;
+            const alert = document.getElementById('signupAlert');
+            
+            if (!fullName || !email || !phone || !password || !confirmPassword) {
+                showAlert(alert, '⚠️ Please fill in all fields.', 'error');
+                return;
+            }
+            
+            if (!isValidEmail(email)) {
+                showAlert(alert, '⚠️ Please enter a valid email.', 'error');
+                return;
+            }
+            
+            if (!/^(0|\+234)?[789][01]\d{8}$/.test(phone.replace(/\s/g, ''))) {
+                showAlert(alert, '⚠️ Please enter a valid Nigerian phone number.', 'error');
+                return;
+            }
+            
+            if (password.length < 6) {
+                showAlert(alert, '⚠️ Password must be at least 6 characters.', 'error');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                showAlert(alert, '⚠️ Passwords do not match.', 'error');
+                return;
+            }
+            
+            if (!termsChecked) {
+                showAlert(alert, '⚠️ Please accept the Terms & Privacy Policy.', 'error');
+                return;
+            }
+            
+            const btn = e.target.querySelector('button[type="submit"]');
+            const orig = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating account...';
+            clearAlerts();
+            
+            try {
+                if (typeof signUpUser === 'undefined') {
+                    throw new Error('Authentication not loaded. Refresh page.');
+                }
+                
+                const result = await signUpUser(email, password, fullName, phone);
+                
+                if (result.success) {
+                    showAlert(alert, '✅ Account created! Check your email to verify.', 'success');
+                    
+                    // WhatsApp welcome (optional)
+                    const welcomeMsg = `👋 *NEW CUSTOMER SIGNUP*\n\n*Genera Tech Hub*\n\nName: ${fullName}\nEmail: ${email}\nPhone: ${phone}\n\n_Welcome to Genera Tech Hub — Technology You Can Trust_ 👑`;
+                    setTimeout(() => {
+                        if (typeof openWhatsApp !== 'undefined') openWhatsApp(welcomeMsg);
+                    }, 2000);
+                    
+                    setTimeout(() => {
+                        switchAuthTab('login');
+                        document.getElementById('loginEmail').value = email;
+                    }, 2500);
+                } else {
+                    showAlert(alert, '❌ ' + (result.error || 'Signup failed'), 'error');
+                    btn.disabled = false;
+                    btn.innerHTML = orig;
+                }
+            } catch (error) {
+                console.error('Signup error:', error);
+                showAlert(alert, '❌ ' + error.message, 'error');
+                btn.disabled = false;
+                btn.innerHTML = orig;
+            }
+        }
+        
+        // ============================================
+        // FORGOT PASSWORD
+        // ============================================
+        
+        async function handleForgotPassword(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value.trim();
+            const alert = document.getElementById('loginAlert');
+            
+            if (!email || !isValidEmail(email)) {
+                showAlert(alert, '⚠️ Enter your email to reset password.', 'error');
+                return;
+            }
+            
+            if (typeof window.supabaseClient === 'undefined') {
+                showAlert(alert, '⚠️ System not ready. Refresh page.', 'error');
+                return;
+            }
+            
+            try {
+                const { error } = await window.supabaseClient.auth.resetPasswordForEmail(email, {
+                    redirectTo: window.location.origin + '/src/pages/login.html'
+                });
+                
+                if (error) throw error;
+                showAlert(alert, '✅ Password reset link sent to your email!', 'success');
+            } catch (error) {
+                console.error('Reset error:', error);
+                showAlert(alert, '❌ ' + error.message, 'error');
+            }
+        }
+        
+        // ============================================
+        // AUTH CHECK & REDIRECT
+        // ============================================
+        
+        async function checkAuthAndRedirect() {
+            try {
+                if (typeof getCurrentUser === 'undefined') return;
+                
+                const result = await getCurrentUser();
+                
+                if (result.success && result.user) {
+                    const email = String(result.user.email || '').toLowerCase();
+                    const name = result.user.user_metadata?.full_name || email;
+                    
+                    const alert = document.getElementById('loginAlert');
+                    showAlert(alert, `👋 Welcome back, ${name}! Redirecting...`, 'info');
+                    
+                    setTimeout(() => {
+                        if (email === 'mudasirumukthar@gmail.com') {
+                            window.location.href = '/src/pages/admin/index.html';
+                        } else {
+                            window.location.href = '/src/pages/index.html';
+                        }
+                    }, 1500);
+                }
+            } catch (error) {
+                console.error('Auth check error:', error);
+            }
+        }
+        
+        // ============================================
+        // HELPERS
+        // ============================================
+        
+        function isValidEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+        
+        function showAlert(element, message, type) {
+            if (!element) return;
+            element.textContent = message;
+            element.className = `alert alert-${type} show`;
+        }
+        
+        function clearAlerts() {
+            const loginAlert = document.getElementById('loginAlert');
+            const signupAlert = document.getElementById('signupAlert');
+            if (loginAlert) loginAlert.className = 'alert';
+            if (signupAlert) signupAlert.className = 'alert';
+        }
+    </script>
+</body>
+</html>
